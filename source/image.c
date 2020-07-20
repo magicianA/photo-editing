@@ -38,46 +38,19 @@ int readBMP(Image *image,const char *path,int x,int y,int flag){
     strcpy(strstr(temp,".bmp"),".tmp");
 	if(fp)
 	{
-		fseek(fp, 28L, 0);
-		fread(&bmpinfo.biBitCount, 2, 1, fp);
-		if (bmpinfo.biBitCount != 24U)
-		{
-			fclose(fp);
-			return 0;
-		}
-
-		fseek(fp, 30L, 0);
-		fread(&bmpinfo.biCompression, 4, 1, fp);
-		if (bmpinfo.biCompression != 0UL)
-		{
-			fclose(fp);
-			return -1;
-		}
-
-		fseek(fp, 18L, 0);
-		fread(&bmpinfo.biWidth, 4, 1, fp);
-		if (bmpinfo.biWidth > SCR_WIDTH)
-		{
-			fclose(fp);
-			return -1;
-		}
-
-		fread(&bmpinfo.biHeight, 4, 1, fp);
-		if (bmpinfo.biHeight > SCR_HEIGHT)
-		{
-			fclose(fp);
-			return -1;
-		}
+        fread(&bmphead,sizeof(bmphead),1,fp);
+        fread(&bmpinfo,sizeof(bmpinfo),1,fp);
+        if(bmphead.bfType != 0x4d42 || bmpinfo.biBitCount != 24u || bmpinfo.biCompression != 0ul || bmpinfo.biWidth > SCR_WIDTH ||
+        bmpinfo.biHeight > SCR_HEIGHT){
+            fclose(fp);
+            return 0;
+        }
 
 		linebytes = (3 * bmpinfo.biWidth) % 4;
 		if (!linebytes)
-		{
 			linebytes = 3 * bmpinfo.biWidth;
-		}
 		else
-		{
 			linebytes = 3 * bmpinfo.biWidth + 4 - linebytes;
-		}
 
 		if ((buffer = (BGR*)malloc(linebytes)) == 0)
 		{
@@ -114,8 +87,7 @@ int readBMP(Image *image,const char *path,int x,int y,int flag){
 		fclose(fp);
         fclose(ft);
 	}
-	else
-	{
+	else{
 		return -1;
 	}
 	return 1;

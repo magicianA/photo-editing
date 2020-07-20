@@ -19,7 +19,7 @@ typedef struct{
 }Image;
 
 typedef unsigned int UINT16;
-typedef int DWORD;
+typedef unsigned long DWORD;
 typedef unsigned int WORD;
 typedef long LONG;
 
