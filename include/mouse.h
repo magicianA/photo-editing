@@ -1,5 +1,5 @@
-#ifndef MOUSE_h
-#define MOUSE_h
+#ifndef MOUSE_H
+#define MOUSE_H
 
 #include "svga.h"
 #include<conio.h>

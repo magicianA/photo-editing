@@ -27,6 +27,8 @@ typedef unsigned char u8;
 typedef unsigned int u16;
 typedef unsigned long u32;
 
+typedef unsigned char byte;
+
 void setSVGA(void);
 u32 getPixel(int x, int y);
 void selectPage(register u8 page);

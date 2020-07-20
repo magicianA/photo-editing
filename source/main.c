@@ -3,9 +3,11 @@
 #include"svga.h"
 #include"mouse.h"
 #include"text.h"
-
+#include"image.h"
 void waitMouse(){
+	Image image = {0};
 	Mouse mouseOld, mouseNew;
+	readBMP(&image,"temp\\timg.bmp",0,0,1);
 	mouseStatus(&mouseOld);
 	mouseStoreBk(mouseOld.x, mouseOld.y);
     while(1){
@@ -17,21 +19,27 @@ void waitMouse(){
 			mouseStoreBk(mouseNew.x, mouseNew.y);
 			mouseDraw(mouseNew);
 			if(mouseNew.button == 1){
+				putBMP(&image,mouseNew.x,mouseNew.y);
 				break;
 			}
 			mouseOld = mouseNew;
         }
     }
 }
+void testGoodbye(){
+	showGoodbyeImage();
+	TextGB64(100, 100, 50, WHITE, "◊£ƒ„…ÌÃÂΩ°øµ£¨‘Ÿº˚",5);
+	delay(1000);
+}
 int main()
 {
-    
     setSVGA();
-    mouseReset();
     bar(0,0,SCR_WIDTH,SCR_HEIGHT,TIANYILAN);
     line(0,SCR_HEIGHT / 2,SCR_WIDTH,SCR_HEIGHT,WHITE);
-	TextGB64(200+30, 100, 50, WHITE, "≤‚ ‘",0); //encoding : GB2312
-	getch();
+	TextGB64(400, 100, 50, WHITE, "≤‚ ‘",0); //encoding : GB2312
+	mouseReset();
 	waitMouse();
+	getch();
+	testGoodbye();
     return 0;
 }
