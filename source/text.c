@@ -380,3 +380,4 @@ int TextGB64(int x, int y, int part, u32 color, unsigned char* str, int delayus)
 	}
 	return 1;
 }
+

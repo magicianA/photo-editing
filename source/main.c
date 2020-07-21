@@ -7,9 +7,10 @@
 void waitMouse(){
 	Image image = {0};
 	Mouse mouseOld, mouseNew;
-	readBMP(&image,"temp\\timg.bmp",0,0,1);
+	readBMP(&image,"temp\\timg.bmp",400,200,1);
 	mouseStatus(&mouseOld);
 	mouseStoreBk(mouseOld.x, mouseOld.y);
+	bar(300,300,300 + 32,300 + 32,TIANYILAN);
     while(1){
 		mouseStatus(&mouseNew);
 		if (mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
@@ -18,7 +19,7 @@ void waitMouse(){
 			mousePutBk(mouseOld.x, mouseOld.y);
 			mouseStoreBk(mouseNew.x, mouseNew.y);
 			mouseDraw(mouseNew);
-			if(mouseNew.button == 1){
+			if(mouseDown(300,300,300 + 32,300 + 32)){
 				putBMP(&image,mouseNew.x,mouseNew.y);
 				break;
 			}
@@ -26,20 +27,18 @@ void waitMouse(){
         }
     }
 }
-void testGoodbye(){
-	showGoodbyeImage();
-	TextGB64(100, 100, 50, WHITE, "祝你身体健康，再见",5);
+void testHello(){
+	//showGoodbyeImage();
+	//TextGB64(100, 100, 50, WHITE, "欢迎使用图片管理系统",0);
 	delay(1000);
 }
 int main()
 {
-    setSVGA();
-    bar(0,0,SCR_WIDTH,SCR_HEIGHT,TIANYILAN);
-    line(0,SCR_HEIGHT / 2,SCR_WIDTH,SCR_HEIGHT,WHITE);
-	TextGB64(400, 100, 50, WHITE, "测试",0); //encoding : GB2312
+	setSVGA();
 	mouseReset();
+	bar(0,0,SCR_WIDTH,SCR_HEIGHT,PINK);
+	//testHello();
 	waitMouse();
 	getch();
-	testGoodbye();
     return 0;
 }

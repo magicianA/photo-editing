@@ -25,7 +25,6 @@ void showGoodbyeImage(){
 int readBMP(Image *image,const char *path,int x,int y,int flag){
 	int i, j;
 	BGR *buffer;
-    BGR tt;
     char temp[25];
 	u32 color24;
 	u32 linebytes;
@@ -95,7 +94,6 @@ int readBMP(Image *image,const char *path,int x,int y,int flag){
 
 int putBMP(Image const *image,int x,int y){
     FILE *fp;
-    FILE *ft;
     int i,j;
     u32 color;
     if(!(image->cachePath)) return 0;
