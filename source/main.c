@@ -10,6 +10,7 @@ void testPhase(){
 	readBMP(&image,"temp\\grass.bmp",400,200,1);
 	mouseStatus(&mouseOld);
 	mouseStoreBk(mouseOld.x, mouseOld.y);
+	bar(300,300,300 + 32,300 + 32,TIANYILAN);
     while(1){
 		mouseStatus(&mouseNew);
 		if (mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
