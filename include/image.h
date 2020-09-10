@@ -4,6 +4,7 @@
 #include<svga.h>
 #include<string.h>
 #include<math.h>
+#include"debug.h"
 
 typedef struct{
     byte r,g,b;
@@ -11,6 +12,9 @@ typedef struct{
 typedef struct{
     byte b,g,r;
 }BGR;
+typedef struct{
+	double h,s,l;
+}HSL;
 typedef struct{
     int width;
     int height;
@@ -47,10 +51,14 @@ typedef struct
 	DWORD biClrImportant;
 } BITMAPINFOHEADER;
 
-u32 RGB2u32(RGB x);
+u32 RGB2u32(const RGB x);
 u32 rgb2u32(byte r,byte g,byte b);
 RGB getRGB(byte r,byte g,byte b);
+HSL RGB2HSL(const RGB x);
+RGB HSL2RGB(HSL hsl);
 int readBMP(Image *image,const char *path,int x,int y,int flag);
+void addBrightness(Image *image,double delta);
+void addSaturation(Image *image,double delta);
 int putBMP(Image const *const image,int x,int y);
 void showGoodbyeImage();
 void putImage(Image *image,int x,int y);

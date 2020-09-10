@@ -1,3 +1,4 @@
 .vscode/
 *.SWP
 output/
+LOG.TXT
