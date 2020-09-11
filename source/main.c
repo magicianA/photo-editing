@@ -2,6 +2,7 @@
 #include<conio.h>
 #include"svga.h"
 #include"mouse.h"
+#include"mirror.h"
 #include"text.h"
 #include"image.h"
 void testPhase(){
@@ -21,7 +22,7 @@ void testPhase(){
 			mouseDraw(mouseNew);
 			if(mouseOld.button == 1){
 				putBMP(&image,mouseNew.x,mouseNew.y);
-				addSaturation(&image,-1);
+				pictureMirror(&image);
 				break;
 			}
 			mouseOld = mouseNew;
@@ -33,7 +34,9 @@ int main()
 	setSVGA();
 	mouseReset();
 	bar(0,0,SCR_WIDTH,SCR_HEIGHT,TIANYILAN);
-	testPhase();
+	showGoodbyeImage();
+	//TextGB32(0,0,100,WHITE,"ÄãÕæ°ô");
+	//testPhase();
 	getch();
     return 0;
 }
