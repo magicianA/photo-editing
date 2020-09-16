@@ -15,12 +15,12 @@ void pictureMirror(Image *image){
     }
 }
 int cut(Image *image,int x1,int x2,int y1,int y2,u32 color){
-    /*int x,y,width,height,i,j;
+    int x,y,width,height,i,j;
     x=image->x,y=image->y,width=image->width,height=image->height;
-    if(x<x1&&x1<x2&&x2<x+width&&y<y1&&y1<y2&&y2<y+height){
-        for(i=x;i<=x+width;i++){
-            for(j=y;j<=y+height;j++){
-                if(i>=x1&&i<=x2&&j>=y2&&j<=y1){
+    if(x<=x1&&x1<x2&&x2<x+width&&y<=y1&&y1<y2&&y2<y+height){
+        for(i=x;i<x+width;i++){
+            for(j=y;j<y+height;j++){
+                if(i>=x1&&i<=x2&&j>=y1&&j<=y2){
                     continue;
                 }
                 else{
@@ -30,13 +30,32 @@ int cut(Image *image,int x1,int x2,int y1,int y2,u32 color){
         }
     }
     else{
-        return 1;
+        return 0;
     }
-    return 0;*/
-    int i,j;
-    for(i = x1;i <= x2;i++){
-        for(j = y1;j <= y2;j++){
-            putPixel(i,j,WHITE);
+    image->x = x1,image->y = y1;
+    image->height = y2 - y1 + 1;
+    image->width = x2 - x1 + 1;
+    saveImageCache(image);
+    return 1;
+}
+void spin(Image *image,u32 cl){
+    int i,j,x,y,width,height;
+    u32 color;
+    FILE *fp;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    fp=fopen(image->cachePath,"rb");
+    for(i=x;i<x+width;i++){
+        for(j=y;j<y+height;j++){
+            putPixel(i,j,cl);
         }
     }
+    for(i=y-width/2+height/2;i<y+width/2+height/2;i++){
+        for(j=x+width/2+height/2;j>x+width/2-height/2;j--){
+            fread(&color,4,1,fp);
+            putPixel(j,i,color);
+        }
+    }
+    image->x=x+width/2-height/2,image->y=y-width/2+height/2;
+    image->width=height,image->height=width;
+    saveImageCache(image);
 }

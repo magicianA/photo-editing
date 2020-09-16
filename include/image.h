@@ -57,9 +57,18 @@ RGB getRGB(byte r,byte g,byte b);
 HSL RGB2HSL(const RGB x);
 RGB HSL2RGB(HSL hsl);
 int readBMP(Image *image,const char *path,int x,int y,int flag);
+int saveBMP(int x1,int y1,int x2,int y2,char* path);
 void addBrightness(Image *image,double delta);
 void addSaturation(Image *image,double delta);
-int putBMP(Image const *const image,int x,int y);
+int putImage(Image const *image,int x,int y);
+int saveImageCache(Image const *image);
 void showGoodbyeImage();
-void putImage(Image *image,int x,int y);
+int convolute3(Image *image,double core[][3]);
+u32 getPixelFromCache(FILE *fp,long x,long y,int height); 
+void sharpen(Image *image,double strength);
+void blur(Image *image);
+void movingBlur(Image *image);
+void unsharpen(Image *image);
+void curve(Image *image);
+
 #endif
