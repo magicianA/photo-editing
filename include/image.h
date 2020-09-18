@@ -70,5 +70,6 @@ void blur(Image *image);
 void movingBlur(Image *image);
 void unsharpen(Image *image);
 void curve(Image *image);
+int putUI(const char *path,int x,int y,u32 bgcolor);
 
 #endif

@@ -3,9 +3,9 @@
 int main()
 {
 	setSVGA();
-	mouseReset();
-	bar(0,0,SCR_WIDTH,SCR_HEIGHT,TIANYILAN);
-	testPhase();
-	getch();
+	mainPhase();
+	delay(200);
+
+	//testPhase();
     return 0;
 }

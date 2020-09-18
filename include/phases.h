@@ -12,6 +12,8 @@
 
 void cutPhase(Image *image);
 void testPhase();
-int msgPhase(int x,int y);
+void mainPhase();
+void adjustPhase(Image *image);
+int msgPhase(int x,int y,char *s);
 
 #endif

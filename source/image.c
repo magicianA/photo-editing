@@ -169,7 +169,6 @@ int saveImageCache(Image const *image){
     FILE *fp;
     int i,j;
     u32 color;
-    if(!(image->cachePath)) return 0;
     if((fp = fopen(image->cachePath,"wb")) == 0)
         return 0;
     for(i = 0;i < image->width;i++){
@@ -185,7 +184,6 @@ int putImage(Image const *image,int x,int y){
     FILE *fp;
     int i,j;
     u32 color;
-    if(!(image->cachePath)) return 0;
     if((fp = fopen(image->cachePath,"rb")) == 0)
         return 0;
     for(i = 0;i < image->width;i++){
@@ -214,6 +212,7 @@ void addBrightness(Image *image,double delta){
             putPixel(x + i,y + j,RGB2u32(HSL2RGB(hsl)));
         }
     }
+    saveImageCache(image);
 }
 void addSaturation(Image *image,double delta){
     int x,y,i,j;
@@ -231,6 +230,7 @@ void addSaturation(Image *image,double delta){
             putPixel(x + i,y + j,RGB2u32(HSL2RGB(hsl)));
         }
     }
+    saveImageCache(image);
 }
 u32 RGB2u32(const RGB x){
     return ((u32) x.r << 16) | ((u32) x.g << 8) | ((u32) x.b);
@@ -365,6 +365,7 @@ int convolute3(Image *image,double core[][3]){
             putPixel(x + i,y + j,RGB2u32(res));
         }
     }
+    fclose(fp);
     return 1;
     /*FILE *fp;
     int i,j;
@@ -426,6 +427,7 @@ int convolute5(Image *image,double core[][5]){
             putPixel(x + i,y + j,RGB2u32(res));
         }
     }
+    fclose(fp);
     return 1; 
 }
 void sharpen(Image *image,double strength){
@@ -433,21 +435,82 @@ void sharpen(Image *image,double strength){
     core[0][1] = core[1][0] = core[1][2] = core[2][1] = -strength;
     core[1][1] = 1 + 4 * strength; 
     convolute3(image,core); 
+    saveImageCache(image);
 }
 void blur(Image *image){
     double core[3][3] = {1.0/9,1.0/9,1.0/9,1.0/9,1.0/9,1.0/9,1.0/9,1.0/9,1.0/9};
     convolute3(image,core);
+    saveImageCache(image);
 }
 void movingBlur(Image *image){
     double core[5][5] = {{0.2,0,0,0,0},{0,0.2,0,0,0},{0,0,0.2,0,0},{0,0,0,0.2,0},{0,0,0,0,0.2}};
     convolute5(image,core);
+    saveImageCache(image);
 }
 void unsharpen(Image *image){
     double core[5][5] = {{-1/256.0,-4/256.0,-6/256.0,-4/256.0,-1/256.0},{-4/256.0,-16/256.0,-24/256.0,-16/256.0,-4/256.0},\
     {-6/256.0,-24/256.0,476/256.0,-24/256.0,-6/256.0},{-4/256.0,-16/256.0,-24/256.0,-16/256.0,-4/256.0},{-1/256.0,-4/256.0,-6/256.0,-4/256.0,-1/256.0}};
     convolute5(image,core);
+    saveImageCache(image);
 }
 void curve(Image *image){
     double core[3][3] = {{-6,-3,0},{-3,1,3},{0,3,6}};
     convolute3(image,core);
+    saveImageCache(image);
+}
+
+
+
+int putUI(const char *path,int x,int y,u32 bgcolor){
+	int i, j;
+	BGR *buffer;
+	u32 color24;
+	u32 linebytes;
+	FILE *fp = fopen(path, "rb");
+	BITMAPFILEHEADER bmphead;
+	BITMAPINFOHEADER bmpinfo;
+
+	if(fp)
+	{
+        fread(&bmphead,sizeof(bmphead),1,fp);
+        fread(&bmpinfo,sizeof(bmpinfo),1,fp);
+        if(bmphead.bfType != 0x4d42 || bmpinfo.biBitCount != 24u || bmpinfo.biCompression != 0ul || bmpinfo.biWidth > SCR_WIDTH ||
+        bmpinfo.biHeight > SCR_HEIGHT){
+            fclose(fp);
+            return 0;
+        }
+
+		linebytes = (3 * bmpinfo.biWidth) % 4;
+		if (!linebytes)
+			linebytes = 3 * bmpinfo.biWidth;
+		else
+			linebytes = 3 * bmpinfo.biWidth + 4 - linebytes;
+
+		if ((buffer = (BGR*)malloc(linebytes)) == 0)
+		{
+			fclose(fp);
+			return -1;
+		}
+
+		fseek(fp, 54L, 0);
+		for (i = bmpinfo.biHeight - 1; i > -1; i--)
+		{
+			fread(buffer, linebytes, 1, fp);
+		    for (j = 0; j < bmpinfo.biWidth; j++)
+		    {
+			    color24 = ((u32)buffer[j].r) << 16 | ((u32)buffer[j].g) << 8 | ((u32)buffer[j].b);
+                if(color24 != WHITE)
+			        putPixel(j + x, i + y, color24);
+                else 
+                    if(bgcolor != -1)
+			            putPixel(j + x, i + y, bgcolor);
+		    }
+		}
+        free(buffer);
+		fclose(fp);
+	}
+	else{
+		return -1;
+	}
+	return 1;
 }

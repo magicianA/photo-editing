@@ -5,19 +5,20 @@ void pictureMirror(Image *image){
     u32 c1,c2;
     int i,j,x,y,width,height;
     x=image->x,y=image->y,width=image->width,height=image->height;
-    for(i=x;i<=x+width/2;i++){
+    for(i=x;i<=x+(width+1)/2;i++){
         for(j=y;j<=y+height;j++){
             c1=getPixel(i,j);
-            c2=getPixel(2*x+width-i,j);
-            putPixel(2*x+width-i,j,c1);
-            putPixel(i,j,c2);      
+            c2=getPixel(2*x+width+(width&1)-i,j);
+            putPixel(2*x+width+(width&1)-i,j,c1);
+            putPixel(i,j,c2);  
         }
     }
+    saveImageCache(image);
 }
 int cut(Image *image,int x1,int x2,int y1,int y2,u32 color){
     int x,y,width,height,i,j;
     x=image->x,y=image->y,width=image->width,height=image->height;
-    if(x<=x1&&x1<x2&&x2<x+width&&y<=y1&&y1<y2&&y2<y+height){
+    if(x<x1&&x1<x2&&x2<x+width&&y<y1&&y1<y2&&y2<y+height){
         for(i=x;i<x+width;i++){
             for(j=y;j<y+height;j++){
                 if(i>=x1&&i<=x2&&j>=y1&&j<=y2){
@@ -43,13 +44,13 @@ void spin(Image *image,u32 cl){
     u32 color;
     FILE *fp;
     x=image->x,y=image->y,width=image->width,height=image->height;
-    fp=fopen(image->cachePath,"rb");
     for(i=x;i<x+width;i++){
         for(j=y;j<y+height;j++){
             putPixel(i,j,cl);
         }
     }
-    for(i=y-width/2+height/2;i<y+width/2+height/2;i++){
+    fp=fopen(image->cachePath,"rb");
+    for(i=y-width/2+height/2;i<y+width/2+height/2;i++){//±ß½ç
         for(j=x+width/2+height/2;j>x+width/2-height/2;j--){
             fread(&color,4,1,fp);
             putPixel(j,i,color);
@@ -57,5 +58,56 @@ void spin(Image *image,u32 cl){
     }
     image->x=x+width/2-height/2,image->y=y-width/2+height/2;
     image->width=height,image->height=width;
+    fclose(fp);
     saveImageCache(image);
 }
+
+/*void spin(Image *image,u32 cl){
+    int i,j,x,y,width,height;
+    u32 color;
+    FILE *fp;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    fp=fopen(image->cachePath,"rb");
+    for(i=x;i<x+width;i++){
+        for(j=y;j<y+height;j++){
+            putPixel(i,j,cl);
+        }
+    }
+    if(width%2==0&&height%2==0){
+        for(i=y-width/2+height/2;i<y+width/2+height/2;i++){
+            for(j=x+width/2+height/2;j>x+width/2-height/2;j--){
+                fread(&color,4,1,fp);
+                putPixel(j,i,color);
+            }
+        }
+    }
+    if(width%2==1&&height%2==0){
+        for(i=y-width/2+height/2;i<y+width/2+height/2+1;i++){
+            for(j=x+width/2+height/2;j>x+width/2-height/2;j--){
+                fread(&color,4,1,fp);
+                putPixel(j,i,color);
+            }
+        }    
+    }
+    if(width%2==0&&height%2==1){
+        for(i=y-width/2+height/2;i<y+width/2+height/2;i++){
+            for(j=x+width/2+height/2+1;j>x+width/2-height/2;j--){
+                fread(&color,4,1,fp);
+                putPixel(j,i,color);
+            }
+        }        
+    }
+    else{
+        for(i=y-width/2+height/2;i<y+width/2+height/2+1;i++){
+            for(j=x+width/2+height/2+1;j>x+width/2-height/2;j--){
+                fread(&color,4,1,fp);
+                putPixel(j,i,color);
+            }
+        }        
+    }
+    
+    image->x=x+width/2-height/2,image->y=y-width/2+height/2;
+    image->width=height,image->height=width;
+    fclose(fp);
+    saveImageCache(image);
+}*/
