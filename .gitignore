@@ -2,3 +2,4 @@
 *.SWP
 output/
 LOG.TXT
+del.bat

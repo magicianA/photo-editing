@@ -5,6 +5,7 @@ void cutPhase(Image *image){
     Mouse mouseOld,mouseNew,mouse1,mouse2;
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x,mouseOld.y);
+    TextGB16(200,571,15,WHITE,"请选择点1");
     while(1){
         mouseStatus(&mouseNew);
         if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
@@ -20,10 +21,13 @@ void cutPhase(Image *image){
                     if(!cut(image,mouse1.x,mouse2.x,mouse1.y,mouse2.y,WHITE)){
                         msgPhase(20,20,"切割失败");
                     }
+                    bar(200,571,500,600,GRAY);
                     break;
                 }else{
                     mouse1 = mouseNew;
                     flag = 1;
+                    bar(200,571,500,600,GRAY);
+                    TextGB16(200,571,15,WHITE,"请选择点2");
                 }
             }
             mouseOld = mouseNew;			
@@ -57,43 +61,138 @@ void testPhase(){
         }
     }
 }
-int msgPhase(int x,int y,char *s){
-    Image image;
+void msgPhase(int x,int y,char *s){
+    Mouse mouseOld,mouseNew;
+    Image bg;
     int i,j;
-    image.x = x,image.y = y,image.height = 200,image.width = 300;
-    strcpy(image.cachePath,"temp\\bgpic.tmp");
-    if(!saveImageCache(&image)){
-        return 0;
-    }
-    for(i = 0;i < 300;i++){
-        for(j = 0;j < 200;j++){
-            putPixel(x + i,y + j,PINK);
+    bg.x = x,bg.y = y,bg.height = 200,bg.width = 300; 
+    strcpy(bg.cachePath,"temp\\bgpic.tmp");
+    saveImageCache(&bg);
+    bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
+    bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
+    bar(x + 100,y + 165,x + 200 - 1,y + 195 - 1,TIANYILAN);
+    TextGB64(x + 100,y,50,WHITE,"提示",0);
+    TextGB32(x + 110,y + 165,40,WHITE,"确定");
+    TextGB32(x + 90,y + 100,40,BLACK,s);
+    while(1){
+        mouseStatus(&mouseNew);
+        if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
+            continue;
+        else{
+            mousePutBk(mouseOld.x, mouseOld.y);
+            mouseStoreBk(mouseNew.x, mouseNew.y);
+            mouseDraw(mouseNew);
+            if(mouseDown(x + 100,y + 165,x + 200,y + 195)){
+                break;
+            }
+            mouseOld = mouseNew;
         }
     }
-    TextGB16(x + 30,x + 40,14,WHITE,s);
-    getch();
-    putImage(&image,x,y);
-    return 1;
+    putImage(&bg,x,y);
 }
-void adjustPhase(Image *image){
+void fliterPhase(Image *image){
+    Mouse mouseOld,mouseNew;
     Image bg;
     int i,j,x,y;
-    bg.x = 300,bg.y = 150,bg.height = 300,bg.width = 400; 
+    char s[10];
+    bg.x = 300,bg.y = 150,bg.height = 230,bg.width = 300; 
     x = 300,y = 150;
     strcpy(bg.cachePath,"temp\\bgpic.tmp");
     saveImageCache(&bg);
-    for(i = 0;i < 300;i++){
-        for(j = 50;j < 200;j++){
-            putPixel(x + i,y + j,BLUE);
+    bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
+    bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
+    bar(x + 250,y + 0,x + 300 - 1,y + 55 - 1,RED);
+    bar(x + 0,y + 200,x + 300 - 1,y + 230 - 1,BLUE);
+    bar(x + 100,y + 195,x + 200 - 1,y + 225 - 1,TIANYILAN);
+    line(x+250,y+0,x+300,y+55,WHITE);
+    line(x+300,y+0,x+250,y+55,WHITE);
+    TextGB64(x + 100,y,50,WHITE,"滤镜",0);
+    TextGB32(x + 110,y + 195,40,WHITE,"确定");
+    while(1){
+        mouseStatus(&mouseNew);
+        if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
+            continue;
+        else{
+            mousePutBk(mouseOld.x, mouseOld.y);
+            mouseStoreBk(mouseNew.x, mouseNew.y);
+            mouseDraw(mouseNew);
+            if(mouseDown(x+250,y+0,x+300,y+55)){
+                break;
+            }
+            if(mouseDown(x + 100,y + 195,x + 200,y + 225)){
+                putImage(&bg,x,y);
+                return;
+            }
+            mouseOld = mouseNew;
         }
     }
-    for(i = 0;i < 300;i++){
-        for(j = 0;j < 55;j++){
-            putPixel(x + i,y + j,TIANYILAN);
-        }
-    }
+    putImage(&bg,x,y);
+}
+void adjustPhase(Image *image){
+    Mouse mouseOld,mouseNew;
+    Image bg;
+    int i,j,x,y;
+    int deltas = 0,deltal = 0;
+    char s[10];
+    bg.x = 300,bg.y = 150,bg.height = 230,bg.width = 300; 
+    x = 300,y = 150;
+    strcpy(bg.cachePath,"temp\\bgpic.tmp");
+    saveImageCache(&bg);
+    bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
+    bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
+    bar(x + 250,y + 0,x + 300 - 1,y + 55 - 1,RED);
+    bar(x + 0,y + 200,x + 300 - 1,y + 230 - 1,BLUE);
+    bar(x + 100,y + 195,x + 200 - 1,y + 225 - 1,TIANYILAN);
+    line(x+250,y+0,x+300,y+55,WHITE);
+    line(x+300,y+0,x+250,y+55,WHITE);
     TextGB64(x + 100,y,50,WHITE,"调节",0);
-    getch();
+    TextGB32(x + 10,y + 55,30,BLACK,"饱和度");
+    TextGB32(x + 10,y + 120,30,BLACK,"亮度");
+    TextGB32(x + 110,y + 195,40,WHITE,"确定");
+    line(x+50,y+100,x+250,y+100,WHITE);
+    line(x+50,y+165,x+250,y+165,WHITE);
+    //bar(x+145,y+95,x+155,y+105,RED);
+    //bar(x+145,y+160,x+155,y+170,RED);
+    TextGB16(x+260,y+100,10,WHITE,"0");
+    TextGB16(x+260,y+165,10,WHITE,"0");
+    while(1){
+        mouseStatus(&mouseNew);
+        if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
+            continue;
+        else{
+            mousePutBk(mouseOld.x, mouseOld.y);
+            mouseStoreBk(mouseNew.x, mouseNew.y);
+            mouseDraw(mouseNew);
+            if(mouseDown(x+250,y+0,x+300,y+55)){
+                break;
+            }
+            if(mouseDown(x+50,y+90,x+250,y+110)){
+                line(x+50,y+100,x+250,y+100,WHITE);
+                deltas = mouseNew.x - (x + 150);
+                sprintf(s,"%d",deltas);
+                bar(x+260,y+100,x+290,y+115,BLUE);
+                TextGB16(x+260,y+100,10,WHITE,s);
+            }
+            if(mouseDown(x+50,y+155,x+250,y+175)){
+                line(x+50,y+165,x+250,y+165,WHITE);
+                deltal = mouseNew.x - (x + 150);
+                sprintf(s,"%d",deltal);
+                bar(x+260,y+165,x+290,y+180,BLUE);
+                TextGB16(x+260,y+165,10,WHITE,s);
+            }
+            if(mouseDown(x + 100,y + 195,x + 200,y + 225)){
+                putImage(&bg,x,y);
+                TextGB16(200,571,15,WHITE,"调整饱和度中，请稍候");
+                addSaturation(image,deltas / 200.0);
+                bar(200,571,500,600,GRAY);
+                TextGB16(200,571,15,WHITE,"调整亮度中，请稍候");
+                addBrightness(image,deltal / 200.0);
+                bar(200,571,500,600,GRAY);
+                return;
+            }
+            mouseOld = mouseNew;
+        }
+    }
     putImage(&bg,x,y);
 }
 void mainPhase(){
@@ -112,6 +211,7 @@ void mainPhase(){
     putUI("ui\\close.bmp",800-64,0,-1);
     putUI("ui\\adjust.bmp",0,256,-1);
     putUI("ui\\reflect.bmp",0,320,-1);
+    putUI("ui\\new.bmp",3+192,0,-1);
     mouseReset();
 
     while(1){
@@ -153,9 +253,8 @@ void mainPhase(){
             if(mouseDown(0,192,64,256)){
                 if(image.height != 0){
                     mousePutBk(mouseNew.x,mouseNew.y);
-                    curve(&image);
-                    //addBrightness(&image,0.1);
-                    //addSaturation(&image,0.1);
+                    fliterPhase(&image);
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
                 }
                 else
                     msgPhase(200,200,"未打开图片");
@@ -176,7 +275,17 @@ void mainPhase(){
                 else
                     msgPhase(200,200,"未打开图片");
             }
+            if(mouseDown(3+192,0,256,64)){
+                //todo
+            }
             mouseOld = mouseNew;
         }
     }
+}
+
+void goodbyePhase(){
+    showGoodbyeImage();
+    TextGB64(0,0,50,WHITE,"最后祝你身体健康，再见",5);
+    TextASC128(300,400,70,WHITE,"GOODBYE",5);
+    delay(1000);
 }

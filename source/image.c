@@ -2,7 +2,7 @@
 #define _sq(x) ((x)*(x))
 
 //source:tweetable-mathematical-art
-char red_fn(long i,long  j){
+char red_fn(long i,long j){
     return (char)(_sq(cos(atan2(j-300,i-400)/2))*255);
 }
 char green_fn(long i,long j){
@@ -135,7 +135,7 @@ int saveBMP(int x1,int y1,int x2,int y2,char* path)
 
 	if ((buffer = (BGR*)malloc(3 * width)) == 0)
 	{
-		//无法开辟内存
+		//无法开辟内�?
 		return 0;
 	}
 	if ((fp = fopen(path, "wb")) == NULL)

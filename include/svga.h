@@ -23,6 +23,8 @@
 #define DARK 0x7d7d7d
 #define TIANYILAN 0x66ccff
 #define PINK 0xff6ec7
+#define RED 0xff0000
+#define BLACK 0x000000
 
 typedef unsigned char u8;
 typedef unsigned int u16;

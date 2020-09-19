@@ -13,7 +13,9 @@
 void cutPhase(Image *image);
 void testPhase();
 void mainPhase();
+void goodbyePhase();
 void adjustPhase(Image *image);
-int msgPhase(int x,int y,char *s);
+void fliterPhase(Image *image);
+void msgPhase(int x,int y,char *s);
 
 #endif
