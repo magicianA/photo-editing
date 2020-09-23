@@ -64,6 +64,7 @@ int putImage(Image const *image,int x,int y);
 int saveImageCache(Image const *image);
 void showGoodbyeImage();
 int convolute3(Image *image,double core[][3]);
+int convolute5(Image *image,double core[][5]);
 u32 getPixelFromCache(FILE *fp,long x,long y,int height); 
 void sharpen(Image *image,double strength);
 void blur(Image *image);
@@ -71,6 +72,5 @@ void movingBlur(Image *image);
 void unsharpen(Image *image);
 void curve(Image *image);
 int putUI(const char *path,int x,int y,u32 bgcolor);
-void showGoodbyeImage();
 
 #endif

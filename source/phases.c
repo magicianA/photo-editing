@@ -282,7 +282,9 @@ void mainPhase(){
         }
     }
 }
-
+void inputPhase(){
+    
+}
 void goodbyePhase(){
     showGoodbyeImage();
     TextGB64(0,0,50,WHITE,"最后祝你身体健康，再见",5);

@@ -49,65 +49,15 @@ void spin(Image *image,u32 cl){
             putPixel(i,j,cl);
         }
     }
-    fp=fopen(image->cachePath,"rb");
-    for(i=y-width/2+height/2;i<y+width/2+height/2;i++){//±ß½ç
-        for(j=x+width/2+height/2;j>x+width/2-height/2;j--){
-            fread(&color,4,1,fp);
-            putPixel(j,i,color);
-        }
-    }
     image->x=x+width/2-height/2,image->y=y-width/2+height/2;
     image->width=height,image->height=width;
+    fp=fopen(image->cachePath,"rb");
+    for(j = 0;j < width;j++){
+        for(i = height - 1;i >= 0;i--){
+            fread(&color,4,1,fp);
+            putPixel(image->x + i,image->y + j,color);
+        }
+    }
     fclose(fp);
     saveImageCache(image);
 }
-
-/*void spin(Image *image,u32 cl){
-    int i,j,x,y,width,height;
-    u32 color;
-    FILE *fp;
-    x=image->x,y=image->y,width=image->width,height=image->height;
-    fp=fopen(image->cachePath,"rb");
-    for(i=x;i<x+width;i++){
-        for(j=y;j<y+height;j++){
-            putPixel(i,j,cl);
-        }
-    }
-    if(width%2==0&&height%2==0){
-        for(i=y-width/2+height/2;i<y+width/2+height/2;i++){
-            for(j=x+width/2+height/2;j>x+width/2-height/2;j--){
-                fread(&color,4,1,fp);
-                putPixel(j,i,color);
-            }
-        }
-    }
-    if(width%2==1&&height%2==0){
-        for(i=y-width/2+height/2;i<y+width/2+height/2+1;i++){
-            for(j=x+width/2+height/2;j>x+width/2-height/2;j--){
-                fread(&color,4,1,fp);
-                putPixel(j,i,color);
-            }
-        }    
-    }
-    if(width%2==0&&height%2==1){
-        for(i=y-width/2+height/2;i<y+width/2+height/2;i++){
-            for(j=x+width/2+height/2+1;j>x+width/2-height/2;j--){
-                fread(&color,4,1,fp);
-                putPixel(j,i,color);
-            }
-        }        
-    }
-    else{
-        for(i=y-width/2+height/2;i<y+width/2+height/2+1;i++){
-            for(j=x+width/2+height/2+1;j>x+width/2-height/2;j--){
-                fread(&color,4,1,fp);
-                putPixel(j,i,color);
-            }
-        }        
-    }
-    
-    image->x=x+width/2-height/2,image->y=y-width/2+height/2;
-    image->width=height,image->height=width;
-    fclose(fp);
-    saveImageCache(image);
-}*/

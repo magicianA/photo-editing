@@ -135,12 +135,10 @@ int saveBMP(int x1,int y1,int x2,int y2,char* path)
 
 	if ((buffer = (BGR*)malloc(3 * width)) == 0)
 	{
-		//无法开辟内�?
 		return 0;
 	}
 	if ((fp = fopen(path, "wb")) == NULL)
 	{
-		//无法创建文件
 		return 0;
 	}
 
