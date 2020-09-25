@@ -65,7 +65,7 @@ void msgPhase(int x,int y,char *s){
     Mouse mouseOld,mouseNew;
     Image bg;
     int i,j;
-    bg.x = x,bg.y = y,bg.height = 200,bg.width = 300; 
+    bg.x = x,bg.y = y,bg.height = 200 + 20,bg.width = 300 + 20; 
     strcpy(bg.cachePath,"temp\\bgpic.tmp");
     saveImageCache(&bg);
     bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
@@ -95,7 +95,7 @@ void fliterPhase(Image *image){
     Image bg;
     int i,j,x,y;
     char s[10];
-    bg.x = 300,bg.y = 150,bg.height = 230,bg.width = 300; 
+    bg.x = 300,bg.y = 150,bg.height = 230 + 20,bg.width = 300 + 20; 
     x = 300,y = 150;
     strcpy(bg.cachePath,"temp\\bgpic.tmp");
     saveImageCache(&bg);
@@ -134,7 +134,7 @@ void adjustPhase(Image *image){
     int i,j,x,y;
     int deltas = 0,deltal = 0;
     char s[10];
-    bg.x = 300,bg.y = 150,bg.height = 230,bg.width = 300; 
+    bg.x = 300,bg.y = 150,bg.height = 230 + 20,bg.width = 300 + 20; 
     x = 300,y = 150;
     strcpy(bg.cachePath,"temp\\bgpic.tmp");
     saveImageCache(&bg);
@@ -232,8 +232,11 @@ void mainPhase(){
                 if(image.height != 0){
                     spin(&image,WHITE);
                 }
-                else
+                else{
+                    mousePutBk(mouseNew.x,mouseNew.y);
                     msgPhase(200,200,"未打开图片");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
             }
             if(mouseDown(0,128,64,192)){
                 if(image.height != 0){
@@ -241,14 +244,20 @@ void mainPhase(){
                     cutPhase(&image);
                     mouseStoreBk(mouseNew.x,mouseNew.y);
                 }
-                else
+                else{
+                    mousePutBk(mouseNew.x,mouseNew.y);
                     msgPhase(200,200,"未打开图片");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
             }
             if(mouseDown(3+128,0,3+192,64)){
                 if(image.height != 0)
                     saveBMP(image.x,image.y,image.x + image.width,image.y + image.height,"temp\\result.bmp");
-                else
+                else{
+                    mousePutBk(mouseNew.x,mouseNew.y);
                     msgPhase(200,200,"未打开图片");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
             }
             if(mouseDown(0,192,64,256)){
                 if(image.height != 0){
@@ -256,15 +265,21 @@ void mainPhase(){
                     fliterPhase(&image);
                     mouseStoreBk(mouseNew.x,mouseNew.y);
                 }
-                else
+                else{
+                    mousePutBk(mouseNew.x,mouseNew.y);
                     msgPhase(200,200,"未打开图片");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
             }
             if(mouseDown(0,320,64,384)){
                 if(image.height != 0){
                     pictureMirror(&image);
                 }
-                else
+                else{
+                    mousePutBk(mouseNew.x,mouseNew.y);
                     msgPhase(200,200,"未打开图片");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
             }
             if(mouseDown(0,256,64,320)){
                 if(image.height != 0){
@@ -272,8 +287,11 @@ void mainPhase(){
                     adjustPhase(&image);
                     mouseStoreBk(mouseNew.x,mouseNew.y);
                 }
-                else
+                else{
+                    mousePutBk(mouseNew.x,mouseNew.y);
                     msgPhase(200,200,"未打开图片");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
             }
             if(mouseDown(3+192,0,256,64)){
                 //todo
