@@ -6,6 +6,10 @@
 #include<math.h>
 #include"debug.h"
 
+#define getRed(i,j) (((getPixel((i),(j))) >> 16) / 255.0)
+#define getGreen(i,j) (((getPixel((i),(j)) >> 8) & 0xff) / 255.0)
+#define getBlue(i,j) (((getPixel((i),(j))) & 0xff) / 255.0)
+
 typedef struct{
     byte r,g,b;
 }RGB;
@@ -66,11 +70,16 @@ void showGoodbyeImage();
 int convolute3(Image *image,double core[][3]);
 int convolute5(Image *image,double core[][5]);
 u32 getPixelFromCache(FILE *fp,long x,long y,int height); 
-void sharpen(Image *image,double strength);
+void sharpen(Image *image);
 void blur(Image *image);
 void movingBlur(Image *image);
 void unsharpen(Image *image);
 void curve(Image *image);
 int putUI(const char *path,int x,int y,u32 bgcolor);
-
+int zoom(Image *image,double scale);
+void gray(Image *image);
+void filtMatrix(Image *image,double a[][3]);
+void old(Image *image);
+//void frozen(Image *image);
+void reverse(Image *image);
 #endif

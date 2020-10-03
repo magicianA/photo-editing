@@ -1,16 +1,16 @@
 #include"mirror.h"
 
 
-void pictureMirror(Image *image){
+void mirror(Image *image){
     u32 c1,c2;
-    int i,j,x,y,width,height;
+    int i,j,k,x,y,width,height;
     x=image->x,y=image->y,width=image->width,height=image->height;
-    for(i=x;i<=x+(width+1)/2;i++){
-        for(j=y;j<=y+height;j++){
-            c1=getPixel(i,j);
-            c2=getPixel(2*x+width+(width&1)-i,j);
-            putPixel(2*x+width+(width&1)-i,j,c1);
-            putPixel(i,j,c2);  
+    for(i = 0,j = width - 1;i < j;i++,j--){
+        for(k = 0;k < height;k++){
+            c1 = getPixel(x + i,y + k);
+            c2 = getPixel(x + j,y + k);
+            putPixel(x + j,y + k,c1);
+            putPixel(x + i,y + k,c2);
         }
     }
     saveImageCache(image);

@@ -397,7 +397,6 @@ int convolute5(Image *image,double core[][5]){
     RGB res;
     double r = 0,g = 0,b = 0;
     x = image->x,y = image->y,width = image->width,height = image->height;
-    if(!(image->cachePath)) return 0;
     if((fp = fopen(image->cachePath,"rb")) == 0)
         return 0;
     for(i = 0;i < width;i++){
@@ -428,7 +427,8 @@ int convolute5(Image *image,double core[][5]){
     fclose(fp);
     return 1; 
 }
-void sharpen(Image *image,double strength){
+void sharpen(Image *image){
+    double strength = 1;
     double core[3][3] = {0};
     core[0][1] = core[1][0] = core[1][2] = core[2][1] = -strength;
     core[1][1] = 1 + 4 * strength; 
@@ -511,4 +511,131 @@ int putUI(const char *path,int x,int y,u32 bgcolor){
 		return -1;
 	}
 	return 1;
+}
+int zoom(Image *image,double scale){
+    int i,j;
+    int h,w,h0,w0,x,y;
+    double srcX,srcY,value1,value0;
+    int srcX0,srcY0,srcX1,srcY1;
+    double resR,resG,resB;
+    u32 color;
+    FILE *fp;
+    if((fp = fopen(image->cachePath,"wb")) == 0)
+        return 0;
+    x = image->x;y = image->y;
+    h0 = image->height,w0 = image->width;
+    h = h0 * scale,w = w0 * scale;
+    for(i = 0;i < w;i++){
+        for(j = 0;j < h;j++){
+            srcX = (i + 0.5) / scale - 0.5;
+            srcY = (i + 0.5) / scale - 0.5;
+            srcX0 = (int) srcX;
+            srcY0 = (int) srcY;
+            srcX1 = min(srcX0 + 1,w - 1);
+            srcY1 = min(srcY0 + 1,h - 1);
+            value0 = (srcX1 - srcX) * getRed(x + srcX0,y + srcY0) + (srcX - srcX0) * getRed(x + srcX1,y + srcY0);
+            value1 = (srcX1 - srcX) * getRed(x + srcX0,y + srcY1) + (srcX - srcX0) * getRed(x + srcX1,y + srcY1);
+            resR = (srcY1 - srcY) * value0 + (srcY - srcY0) * value1;
+
+            value0 = (srcX1 - srcX) * getGreen(x + srcX0,y + srcY0) + (srcX - srcX0) * getGreen(x + srcX1,y + srcY0);
+            value1 = (srcX1 - srcX) * getGreen(x + srcX0,y + srcY1) + (srcX - srcX0) * getGreen(x + srcX1,y + srcY1);
+            resG = (srcY1 - srcY) * value0 + (srcY - srcY0) * value1;
+            
+            value0 = (srcX1 - srcX) * getBlue(x + srcX0,y + srcY0) + (srcX - srcX0) * getBlue(x + srcX1,y + srcY0);
+            value1 = (srcX1 - srcX) * getBlue(x + srcX0,y + srcY1) + (srcX - srcX0) * getBlue(x + srcX1,y + srcY1);
+            resB = (srcY1 - srcY) * value0 + (srcY - srcY0) * value1;
+            color = rgb2u32(resR * 255,resG * 255,resB * 255);
+            fwrite(&color,4,1,fp);
+        }
+    }
+    fclose(fp);
+    for(i = 0;i < w0;i++){
+        for(j = 0;j < h0;j++){
+            putPixel(x + i,y + j,WHITE);
+        }
+    }
+    image->width = w;
+    image->height = h;
+    putImage(image,x,y);
+    return 1;
+}
+void gray(Image *image){
+    int i,j,t;
+    u32 color;
+    int x,y,width,height;
+    RGB res;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    for(i=x;i<x+width;i++){
+        for(j=y;j<y+height;j++){
+            color=getPixel(i,j);
+            res=getRGB(color >> 16,(color >> 8) & 0xff,color & 0xff);
+            t=(30*res.r+59*res.g+11*res.b)/100;
+            res.r=t;
+            res.g=t;
+            res.b=t;
+            putPixel(i,j,RGB2u32(res));
+        }
+    }
+    
+}
+
+void filtMatrix(Image *image,double a[][3]){
+    int i,j;
+    int x,y,width,height;
+    int r,g,b,r1,g1,b1;
+    u32 color;
+    RGB res;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    for(i=x;i<x+width;i++){
+        for(j=y;j<y+height;j++){
+            color=getPixel(i,j);
+            res=getRGB(color >> 16,(color >> 8) & 0xff,color & 0xff);
+            r=res.r;
+            g=res.g;
+            b=res.b;
+            r1=a[0][0]*r+a[0][1]*g+a[0][2]*b;
+            g1=a[1][0]*r+a[1][1]*g+a[1][2]*b;
+            b1=a[2][0]*r+a[2][1]*g+a[2][2]*b;
+            res.r=min(r1,255);
+            res.g=min(g1,255);
+            res.b=min(b1,255);
+            res.r=max(res.r,0);
+            res.g=max(res.g,0);
+            res.b=max(res.b,0);
+            putPixel(i,j,RGB2u32(res));
+        }
+    }    
+}
+
+
+void old(Image *image){
+    double b[][3]={{0.393,0.769,0.189},{0.349,0.686,0.168},{0.272,0.534,0.131}};
+    filtMatrix(image,b);
+    saveImageCache(image);
+}
+
+
+/*void frozen(Image *image){
+    double b[][3]={{1.5,-1.5,-1.5},{-1.5,1.5,-1.5},{-1.5,-1.5,1.5}};
+    filtMatrix(image,b);
+    saveImageCache(image);
+}*/
+
+
+void reverse(Image *image){
+    int i,j;
+    int x,y,width,height;
+    u32 color;
+    RGB res;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    for(i=x;i<x+width;i++){
+        for(j=y;j<y+height;j++){
+            color=getPixel(i,j);
+            res=getRGB(color >> 16,(color >> 8) & 0xff,color & 0xff);
+            res.r=255-res.r;
+            res.g=255-res.g;
+            res.b=255-res.b;
+            putPixel(i,j,RGB2u32(res));
+        }
+    } 
 }

@@ -39,7 +39,7 @@ void testPhase(){
     Mouse mouseOld,mouseNew;
 	bar(0,0,SCR_WIDTH,SCR_HEIGHT,TIANYILAN);
     mouseReset();
-    readBMP(&image,"temp\\timg.bmp",400,200,1);
+    readBMP(&image,"temp\\timg.bmp",0,0,1);
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x, mouseOld.y);
     bar(300,300,300 + 32,300 + 32,PINK);
@@ -53,7 +53,7 @@ void testPhase(){
             mouseDraw(mouseNew);
             if(mouseDown(300,300,332,332)){
                 mousePutBk(mouseNew.x,mouseNew.y);
-                cutPhase(&image);
+                reverse(&image);
                 getch();
                 break;
             }
@@ -69,8 +69,8 @@ void msgPhase(int x,int y,char *s){
     strcpy(bg.cachePath,"temp\\bgpic.tmp");
     saveImageCache(&bg);
     bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
-    bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
-    bar(x + 100,y + 165,x + 200 - 1,y + 195 - 1,TIANYILAN);
+    bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,RED);
+    bar(x + 100,y + 165,x + 200 - 1,y + 195 - 1,RED);
     TextGB64(x + 100,y,50,WHITE,"提示",0);
     TextGB32(x + 110,y + 165,40,WHITE,"确定");
     TextGB32(x + 90,y + 100,40,BLACK,s);
@@ -93,21 +93,35 @@ void msgPhase(int x,int y,char *s){
 void fliterPhase(Image *image){
     Mouse mouseOld,mouseNew;
     Image bg;
+    char fliterNames[10][20];
+    void (*filterFunc[10])(Image *) = {&sharpen,&blur,&curve};
+    int curfilter = -1,curPage = 0;
     int i,j,x,y;
     char s[10];
-    bg.x = 300,bg.y = 150,bg.height = 230 + 20,bg.width = 300 + 20; 
+    bg.x = 300,bg.y = 150,bg.height = 250 + 20,bg.width = 300 + 20; 
     x = 300,y = 150;
-    strcpy(bg.cachePath,"temp\\bgpic.tmp");
+    strcpy(fliterNames[0],"锐化");
+    strcpy(fliterNames[1],"模糊");
+    strcpy(fliterNames[2],"浮雕");
+    strcpy(bg.cachePath,"temp\\filtbgpic.tmp");
     saveImageCache(&bg);
     bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
     bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
     bar(x + 250,y + 0,x + 300 - 1,y + 55 - 1,RED);
-    bar(x + 0,y + 200,x + 300 - 1,y + 230 - 1,BLUE);
-    bar(x + 100,y + 195,x + 200 - 1,y + 225 - 1,TIANYILAN);
+    bar(x + 0,y + 200,x + 300 - 1,y + 250 - 1,BLUE);
+    bar(x + 100,y + 215,x + 220 - 1,y + 245 - 1,TIANYILAN);
     line(x+250,y+0,x+300,y+55,WHITE);
     line(x+300,y+0,x+250,y+55,WHITE);
     TextGB64(x + 100,y,50,WHITE,"滤镜",0);
-    TextGB32(x + 110,y + 195,40,WHITE,"确定");
+    TextGB32(x + 110,y + 215,40,WHITE,"确定");
+    bar(x + 10,y + 70,x + 220,y + 100,PINK);
+    TextGB32(x + 10,y + 70,30,WHITE,fliterNames[0]);
+
+    bar(x + 10,y + 110,x + 220,y + 140,PINK);
+    TextGB32(x + 10,y + 110,30,WHITE,fliterNames[1]);
+
+    bar(x + 10,y + 150,x + 220,y + 180,PINK);
+    TextGB32(x + 10,y + 150,30,WHITE,fliterNames[2]);
     while(1){
         mouseStatus(&mouseNew);
         if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
@@ -119,11 +133,29 @@ void fliterPhase(Image *image){
             if(mouseDown(x+250,y+0,x+300,y+55)){
                 break;
             }
-            if(mouseDown(x + 100,y + 195,x + 200,y + 225)){
-                putImage(&bg,x,y);
-                return;
+            if(mouseDown(x + 10,y + 70,x + 220,y + 100)){
+                curfilter = 0;
             }
-            mouseOld = mouseNew;
+            if(mouseDown(x + 10,y + 110,x + 220,y + 140)){
+                curfilter = 1;
+            }
+            if(mouseDown(x + 10,y + 150,x + 220,y + 180)){
+                curfilter = 2;
+            }
+            if(mouseDown(x + 100,y + 215,x + 220,y + 245)){
+                if(curfilter != -1){
+                    putImage(&bg,x,y);
+                    TextGB16(200,571,15,WHITE,"处理中，请稍候");
+                    filterFunc[curfilter](image);
+                    bar(200,571,500,600,GRAY);
+                    return;
+                }else{
+                    mousePutBk(mouseNew.x,mouseNew.y);
+                    msgPhase(0,0,"请选择滤镜");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
+            }
+            mouseOld = mouseNew; 
         }
     }
     putImage(&bg,x,y);
@@ -273,7 +305,7 @@ void mainPhase(){
             }
             if(mouseDown(0,320,64,384)){
                 if(image.height != 0){
-                    pictureMirror(&image);
+                    mirror(&image);
                 }
                 else{
                     mousePutBk(mouseNew.x,mouseNew.y);
