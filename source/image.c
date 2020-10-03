@@ -365,28 +365,6 @@ int convolute3(Image *image,double core[][3]){
     }
     fclose(fp);
     return 1;
-    /*FILE *fp;
-    int i,j;
-    u32 color[3];
-    u32 up;
-    double sum;
-    if(!(image->cachePath)) return 0;
-    if((fp = fopen(image->cachePath,"rb")) == 0)
-        return 0;
-    up = getPixel(image->x + 1,image->y);
-    for(i = 1;i < image->width - 1;i++){
-        for(j = 1;j < image->height - 1;j++){
-            fread(color,4,3,fp);
-            sum = core[0][0] * color[0] + core[0][1] * color[1] + core[0][2] * color[2] \
-                + core[1][0] * up + core[1][1] * getPixel(image->x + i,image->y + j) + core[1][2] * getPixel(image->x + i,image->y + j + 1) \
-                + core[2][0] * getPixel(image->x + i + 1,image->y + j - 1) + core[2][1] * getPixel(image->x + i + 1,image->y + j) + core[2][2] * getPixel(image->x + i + 1,image->y + j + 1);
-            putPixel(image->x + i,image->y + j,(u32)sum);
-            up = getPixel(image->x + i,image->y + j);
-            //if(j < )
-                fseek(fp,-8,SEEK_CUR);
-        }
-    }
-    return 1;*/
 }
 int convolute5(Image *image,double core[][5]){
     FILE *fp;
@@ -512,7 +490,7 @@ int putUI(const char *path,int x,int y,u32 bgcolor){
 	}
 	return 1;
 }
-int zoom(Image *image,double scale){
+int zoom(Image *image,double scaleX,double scaleY){
     int i,j;
     int h,w,h0,w0,x,y;
     double srcX,srcY,value1,value0;
@@ -524,15 +502,19 @@ int zoom(Image *image,double scale){
         return 0;
     x = image->x;y = image->y;
     h0 = image->height,w0 = image->width;
-    h = h0 * scale,w = w0 * scale;
+    h = h0 * scaleY,w = w0 * scaleX;
+    if(h > BMP_HEIGTH_MAX || w > BMP_WIDTH_MAX){
+        fclose(fp);
+        return 0;
+    }
     for(i = 0;i < w;i++){
         for(j = 0;j < h;j++){
-            srcX = (i + 0.5) / scale - 0.5;
-            srcY = (i + 0.5) / scale - 0.5;
+            srcX = (i + 0.5) / scaleX - 0.5;
+            srcY = (j + 0.5) / scaleY - 0.5;
             srcX0 = (int) srcX;
             srcY0 = (int) srcY;
-            srcX1 = min(srcX0 + 1,w - 1);
-            srcY1 = min(srcY0 + 1,h - 1);
+            srcX1 = min(srcX0 + 1,w0 - 1);
+            srcY1 = min(srcY0 + 1,h0 - 1);
             value0 = (srcX1 - srcX) * getRed(x + srcX0,y + srcY0) + (srcX - srcX0) * getRed(x + srcX1,y + srcY0);
             value1 = (srcX1 - srcX) * getRed(x + srcX0,y + srcY1) + (srcX - srcX0) * getRed(x + srcX1,y + srcY1);
             resR = (srcY1 - srcY) * value0 + (srcY - srcY0) * value1;
@@ -544,6 +526,8 @@ int zoom(Image *image,double scale){
             value0 = (srcX1 - srcX) * getBlue(x + srcX0,y + srcY0) + (srcX - srcX0) * getBlue(x + srcX1,y + srcY0);
             value1 = (srcX1 - srcX) * getBlue(x + srcX0,y + srcY1) + (srcX - srcX0) * getBlue(x + srcX1,y + srcY1);
             resB = (srcY1 - srcY) * value0 + (srcY - srcY0) * value1;
+            resR = max(resR,0),resB = max(resB,0),resG = max(resG,0);
+            resR = min(resR,1),resB = min(resB,1),resG = min(resG,1);
             color = rgb2u32(resR * 255,resG * 255,resB * 255);
             fwrite(&color,4,1,fp);
         }
@@ -556,7 +540,9 @@ int zoom(Image *image,double scale){
     }
     image->width = w;
     image->height = h;
-    putImage(image,x,y);
+    image->x = x + w0 / 2 - w / 2;
+    image->y = y + h0 / 2 - h / 2; 
+    putImage(image,image->x,image->y);
     return 1;
 }
 void gray(Image *image){

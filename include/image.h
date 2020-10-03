@@ -76,7 +76,7 @@ void movingBlur(Image *image);
 void unsharpen(Image *image);
 void curve(Image *image);
 int putUI(const char *path,int x,int y,u32 bgcolor);
-int zoom(Image *image,double scale);
+int zoom(Image *image,double scaleX,double scaleY);
 void gray(Image *image);
 void filtMatrix(Image *image,double a[][3]);
 void old(Image *image);

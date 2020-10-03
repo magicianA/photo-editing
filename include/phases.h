@@ -29,5 +29,6 @@ void msgPhase(int x,int y,char *s);
 int inputPhase(char* filename);
 void savePhase(Image *image);
 void openPhase(Image *image);
+void zoomPhase(Image *image);
 
 #endif

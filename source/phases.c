@@ -39,7 +39,7 @@ void testPhase(){
     Mouse mouseOld,mouseNew;
 	bar(0,0,SCR_WIDTH,SCR_HEIGHT,TIANYILAN);
     mouseReset();
-    readBMP(&image,"temp\\timg.bmp",0,0,1);
+    readBMP(&image,"temp\\timg.bmp",400,200,1);
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x, mouseOld.y);
     bar(300,300,300 + 32,300 + 32,PINK);
@@ -53,7 +53,7 @@ void testPhase(){
             mouseDraw(mouseNew);
             if(mouseDown(300,300,332,332)){
                 mousePutBk(mouseNew.x,mouseNew.y);
-                reverse(&image);
+                zoom(&image,0.8,1.2);
                 getch();
                 break;
             }
@@ -197,7 +197,7 @@ void adjustPhase(Image *image){
     char s[10];
     bg.x = 300,bg.y = 150,bg.height = 230 + 20,bg.width = 300 + 20; 
     x = 300,y = 150;
-    strcpy(bg.cachePath,"temp\\msgbgpic.tmp");
+    strcpy(bg.cachePath,"temp\\bgpic.tmp");
     saveImageCache(&bg);
     bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
     bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
@@ -272,6 +272,7 @@ void mainPhase(){
     putUI("ui\\close.bmp",800-64,0,-1);
     putUI("ui\\adjust.bmp",0,256,-1);
     putUI("ui\\reflect.bmp",0,320,-1);
+    putUI("ui\\resize.bmp",0,384 + 5,-1);
     putUI("ui\\new.bmp",3+192,0,-1);
     putUI("ui\\file.bmp",3+256,0,-1);
     mouseReset();
@@ -353,6 +354,18 @@ void mainPhase(){
                 if(image.height != 0){
                     mousePutBk(mouseNew.x,mouseNew.y);
                     adjustPhase(&image);
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
+                else{
+                    mousePutBk(mouseNew.x,mouseNew.y);
+                    msgPhase(200,200,"未打开图片");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
+            }
+            if(mouseDown(0,384+5,64,448+5)){
+                if(image.height != 0){
+                    mousePutBk(mouseNew.x,mouseNew.y);
+                    zoomPhase(&image);
                     mouseStoreBk(mouseNew.x,mouseNew.y);
                 }
                 else{
@@ -519,6 +532,77 @@ void savePhase(Image *image){
                     mouseStoreBk(mouseNew.x,mouseNew.y);
                     return;
                 }
+            }
+            mouseOld = mouseNew;
+        }
+    }
+    putImage(&bg,x,y);
+}
+
+void zoomPhase(Image *image){
+    Mouse mouseOld,mouseNew;
+    Image bg;
+    int i,j,x,y;
+    double scaleX = 1,scaleY = 1;
+    char s[10];
+    bg.x = 300,bg.y = 150,bg.height = 230 + 20,bg.width = 300 + 20; 
+    x = 300,y = 150;
+    strcpy(bg.cachePath,"temp\\bgpic.tmp");
+    saveImageCache(&bg);
+    bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
+    bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
+    bar(x + 250,y + 0,x + 300 - 1,y + 55 - 1,RED);
+    bar(x + 0,y + 200,x + 300 - 1,y + 230 - 1,BLUE);
+    bar(x + 100,y + 195,x + 200 - 1,y + 225 - 1,TIANYILAN);
+    line(x+250,y+0,x+300,y+55,WHITE);
+    line(x+300,y+0,x+250,y+55,WHITE);
+    TextGB64(x + 100,y,50,WHITE,"放缩",0);
+    TextGB32(x + 10,y + 55,30,BLACK,"横轴放缩倍率");
+    TextGB32(x + 10,y + 120,30,BLACK,"纵轴放缩倍率");
+    TextGB32(x + 110,y + 195,40,WHITE,"确定");
+    line(x+50,y+100,x+250,y+100,WHITE);
+    line(x+50,y+165,x+250,y+165,WHITE);
+    //bar(x+145,y+95,x+155,y+105,RED);
+    //bar(x+145,y+160,x+155,y+170,RED);
+    TextGB16(x+260,y+100,10,WHITE,"1.0");
+    TextGB16(x+260,y+165,10,WHITE,"1.0");
+    while(1){
+        mouseStatus(&mouseNew);
+        if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
+            continue;
+        else{
+            mousePutBk(mouseOld.x, mouseOld.y);
+            mouseStoreBk(mouseNew.x, mouseNew.y);
+            mouseDraw(mouseNew);
+            if(mouseDown(x+250,y+0,x+300,y+55)){
+                break;
+            }
+            if(mouseDown(x+50,y+90,x+250,y+110)){
+                line(x+50,y+100,x+250,y+100,WHITE);
+                scaleX = (mouseNew.x - (x + 50)) / 200.0 * 1.5 + 0.5;
+                scaleY = scaleX;
+                sprintf(s,"%3.2f",scaleX);
+                bar(x+260,y+100,x+298,y+115,BLUE);
+                TextGB16(x+260,y+100,10,WHITE,s);
+                bar(x+260,y+165,x+298,y+180,BLUE);
+                TextGB16(x+260,y+165,10,WHITE,s);
+            }
+            if(mouseDown(x+50,y+155,x+250,y+175)){
+                line(x+50,y+165,x+250,y+165,WHITE);
+                scaleY = (mouseNew.x - (x + 50)) / 200.0 * 1.5 + 0.5;
+                sprintf(s,"%3.2f",scaleY);
+                bar(x+260,y+165,x+298,y+180,BLUE);
+                TextGB16(x+260,y+165,10,WHITE,s);
+            }
+            if(mouseDown(x + 100,y + 195,x + 200,y + 225)){
+                putImage(&bg,x,y);
+                TextGB16(200,571,15,WHITE,"调整中，请稍候");
+                if(zoom(image,scaleX,scaleY) == 0){
+                    msgPhase(200,200,"放缩失败");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
+                bar(200,571,500,600,GRAY);
+                return;
             }
             mouseOld = mouseNew;
         }
