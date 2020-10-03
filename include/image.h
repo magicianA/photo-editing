@@ -81,5 +81,6 @@ void gray(Image *image);
 void filtMatrix(Image *image,double a[][3]);
 void old(Image *image);
 //void frozen(Image *image);
+void closeImage(Image *image);
 void reverse(Image *image);
 #endif

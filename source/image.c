@@ -576,7 +576,7 @@ void gray(Image *image){
             putPixel(i,j,RGB2u32(res));
         }
     }
-    
+    saveImageCache(image);
 }
 
 void filtMatrix(Image *image,double a[][3]){
@@ -637,5 +637,18 @@ void reverse(Image *image){
             res.b=255-res.b;
             putPixel(i,j,RGB2u32(res));
         }
-    } 
+    }
+    saveImageCache(image); 
+}
+void closeImage(Image *image){
+    int i,j;
+    int x,y,width,height;
+    x = image->x,y = image->y,width = image->width,height = image->height;
+    for(i = 0;i < width;i++){
+        for(j = 0;j < height;j++){
+            putPixel(x + i,y + j,WHITE);
+        }
+    }
+    image->x = image-> y = image->width = image->height = 0;
+    strcpy(image->cachePath,"");
 }

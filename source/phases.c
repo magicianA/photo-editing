@@ -73,7 +73,7 @@ void msgPhase(int x,int y,char *s){
     bar(x + 100,y + 165,x + 200 - 1,y + 195 - 1,RED);
     TextGB64(x + 100,y,50,WHITE,"提示",0);
     TextGB32(x + 110,y + 165,40,WHITE,"确定");
-    TextGB32(x + 90,y + 100,40,BLACK,s);
+    TextGB32(x + 10,y + 100,40,BLACK,s);
     while(1){
         mouseStatus(&mouseNew);
         if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
@@ -94,22 +94,29 @@ void fliterPhase(Image *image){
     Mouse mouseOld,mouseNew;
     Image bg;
     char fliterNames[10][20];
-    void (*filterFunc[10])(Image *) = {&sharpen,&blur,&curve};
+    void (*filterFunc[10])(Image *) = {&old,&reverse,&gray,&sharpen,&blur,&curve,&movingBlur,&unsharpen};
     int curfilter = -1,curPage = 0;
     int i,j,x,y;
     char s[10];
     bg.x = 300,bg.y = 150,bg.height = 250 + 20,bg.width = 300 + 20; 
     x = 300,y = 150;
-    strcpy(fliterNames[0],"锐化");
-    strcpy(fliterNames[1],"模糊");
-    strcpy(fliterNames[2],"浮雕");
-    strcpy(bg.cachePath,"temp\\filtbgpic.tmp");
+    strcpy(fliterNames[0],"复古");
+    strcpy(fliterNames[1],"反色");
+    strcpy(fliterNames[2],"黑白");    
+    strcpy(fliterNames[3],"锐化");
+    strcpy(fliterNames[4],"模糊");
+    strcpy(fliterNames[5],"浮雕");
+    strcpy(fliterNames[6],"运动模糊");
+    strcpy(fliterNames[7],"降噪");
+    strcpy(bg.cachePath,"temp\\bgpic.tmp");
     saveImageCache(&bg);
     bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
     bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
     bar(x + 250,y + 0,x + 300 - 1,y + 55 - 1,RED);
     bar(x + 0,y + 200,x + 300 - 1,y + 250 - 1,BLUE);
     bar(x + 100,y + 215,x + 220 - 1,y + 245 - 1,TIANYILAN);
+    putUI("ui\\up.bmp",x + 230,y + 60,-1);
+    putUI("ui\\down.bmp",x + 230,y + 110,-1);
     line(x+250,y+0,x+300,y+55,WHITE);
     line(x+300,y+0,x+250,y+55,WHITE);
     TextGB64(x + 100,y,50,WHITE,"滤镜",0);
@@ -133,14 +140,36 @@ void fliterPhase(Image *image){
             if(mouseDown(x+250,y+0,x+300,y+55)){
                 break;
             }
+            if(mouseDown(x + 230,y + 60,x + 270,y + 100)){
+                if(curPage > 0){
+                    curPage--;
+                    bar(x + 10,y + 70,x + 220,y + 100,PINK);
+                    TextGB32(x + 10,y + 70,30,WHITE,fliterNames[0 + curPage * 3]);
+                    bar(x + 10,y + 110,x + 220,y + 140,PINK);
+                    TextGB32(x + 10,y + 110,30,WHITE,fliterNames[1 + curPage * 3]);
+                    bar(x + 10,y + 150,x + 220,y + 180,PINK);
+                    TextGB32(x + 10,y + 150,30,WHITE,fliterNames[2 + curPage * 3]);
+                }
+            }
+            if(mouseDown(x + 230,y + 110,x + 270,y + 150)){
+                if(curPage < 1){
+                    curPage++;
+                    bar(x + 10,y + 70,x + 220,y + 100,PINK);
+                    TextGB32(x + 10,y + 70,30,WHITE,fliterNames[0 + curPage * 3]);
+                    bar(x + 10,y + 110,x + 220,y + 140,PINK);
+                    TextGB32(x + 10,y + 110,30,WHITE,fliterNames[1 + curPage * 3]);
+                    bar(x + 10,y + 150,x + 220,y + 180,PINK);
+                    TextGB32(x + 10,y + 150,30,WHITE,fliterNames[2 + curPage * 3]);
+                }
+            }
             if(mouseDown(x + 10,y + 70,x + 220,y + 100)){
-                curfilter = 0;
+                curfilter = 0 + curPage * 3;
             }
             if(mouseDown(x + 10,y + 110,x + 220,y + 140)){
-                curfilter = 1;
+                curfilter = 1 + curPage * 3;
             }
             if(mouseDown(x + 10,y + 150,x + 220,y + 180)){
-                curfilter = 2;
+                curfilter = 2 + curPage * 3;
             }
             if(mouseDown(x + 100,y + 215,x + 220,y + 245)){
                 if(curfilter != -1){
@@ -168,7 +197,7 @@ void adjustPhase(Image *image){
     char s[10];
     bg.x = 300,bg.y = 150,bg.height = 230 + 20,bg.width = 300 + 20; 
     x = 300,y = 150;
-    strcpy(bg.cachePath,"temp\\bgpic.tmp");
+    strcpy(bg.cachePath,"temp\\msgbgpic.tmp");
     saveImageCache(&bg);
     bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
     bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
@@ -244,6 +273,7 @@ void mainPhase(){
     putUI("ui\\adjust.bmp",0,256,-1);
     putUI("ui\\reflect.bmp",0,320,-1);
     putUI("ui\\new.bmp",3+192,0,-1);
+    putUI("ui\\file.bmp",3+256,0,-1);
     mouseReset();
 
     while(1){
@@ -258,7 +288,9 @@ void mainPhase(){
                 break;
             }
             if(mouseDown(3+64,0,3+128,64)){
-                readBMP(&image,"temp\\timg.bmp",300,200,1);
+                mousePutBk(mouseNew.x,mouseNew.y);
+                openPhase(&image);
+                mouseStoreBk(mouseNew.x,mouseNew.y);
             }
             if(mouseDown(0,64,64,128)){
                 if(image.height != 0){
@@ -283,8 +315,12 @@ void mainPhase(){
                 }
             }
             if(mouseDown(3+128,0,3+192,64)){
-                if(image.height != 0)
-                    saveBMP(image.x,image.y,image.x + image.width,image.y + image.height,"temp\\result.bmp");
+                if(image.height != 0){
+                    mousePutBk(mouseNew.x,mouseNew.y);
+                    savePhase(&image);
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                    //saveBMP(image.x,image.y,image.x + image.width,image.y + image.height,"temp\\result.bmp");
+                }
                 else{
                     mousePutBk(mouseNew.x,mouseNew.y);
                     msgPhase(200,200,"未打开图片");
@@ -328,16 +364,164 @@ void mainPhase(){
             if(mouseDown(3+192,0,256,64)){
                 //todo
             }
+            if(mouseDown(3 + 256,0,3 + 320,64)){
+                if(image.height != 0){
+                    closeImage(&image);
+                }
+                else{
+                    mousePutBk(mouseNew.x,mouseNew.y);
+                    msgPhase(200,200,"未打开图片");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
+            }
             mouseOld = mouseNew;
         }
     }
 }
-void inputPhase(){
-    
+void openPhase(Image *image){
+    Mouse mouseOld,mouseNew;
+    Image bg;
+    int i,j,x,y;
+    char s[20] = "temp\\";
+    char fileName[10] = "timg.bmp";
+    if(image->height != 0){
+        msgPhase(200,200,"您已打开图片");
+        return;
+    }
+    bg.x = 300,bg.y = 150,bg.height = 230 + 40,bg.width = 300 + 40; 
+    x = 300,y = 150;
+    strcpy(bg.cachePath,"temp\\bgpic.tmp");
+    saveImageCache(&bg);
+    bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
+    bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
+    bar(x + 250,y + 0,x + 300 - 1,y + 55 - 1,RED);
+    bar(x + 0,y + 200,x + 300 - 1,y + 230 - 1,BLUE);
+    bar(x + 100,y + 195,x + 200 - 1,y + 225 - 1,TIANYILAN);
+    bar(x + 40,y + 90,x + 250 - 1,y + 140 - 1,WHITE);
+    line(x+250,y+0,x+300,y+55,WHITE);
+    line(x+300,y+0,x+250,y+55,WHITE);
+    TextGB64(x + 30,y,50,WHITE,"打开图片",0);
+    TextGB32(x + 110,y + 195,40,WHITE,"确定");
+    TextASC24(340, 240, 14, 0, fileName);
+    while(1){
+        mouseStatus(&mouseNew);
+        if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
+            continue;
+        else{
+            mousePutBk(mouseOld.x, mouseOld.y);
+            mouseStoreBk(mouseNew.x, mouseNew.y);
+            mouseDraw(mouseNew);
+            if(mouseDown(x+250,y+0,x+300,y+55)){
+                break;
+            }
+            if(mouseDown(x + 40,y + 90,x + 250,y + 140)){
+                mousePutBk(mouseNew.x,mouseNew.y);
+                inputPhase(fileName);
+                mouseStoreBk(mouseNew.x,mouseNew.y);
+            }
+            if(mouseDown(x + 100,y + 195,x + 200,y + 225)){
+                mousePutBk(mouseNew.x,mouseNew.y);
+                putImage(&bg,x,y);
+                strcat(s,fileName);
+                if(readBMP(image,s,300,200,1) == 1)
+                    return;
+                else{
+                    image->x = image->y = image->height = image->width = 0;
+                    strcpy(image->cachePath,"");
+                    strcpy(s,"temp\\");
+                    msgPhase(200,200,"打开失败");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                    break;
+                }
+            }
+            mouseOld = mouseNew;
+        }
+    }
+    putImage(&bg,x,y);
 }
 void goodbyePhase(){
     showGoodbyeImage();
     TextGB64(0,0,50,WHITE,"最后祝你身体健康，再见",5);
     TextASC128(300,400,70,WHITE,"GOODBYE",5);
     delay(1000);
+}
+int inputPhase(char* filename){
+    unsigned int key;
+    unsigned int len = strlen(filename);
+    while((key = bioskey(0)) != ESC){
+        if (key == Backspace){
+            if (len > 0){
+                len--;
+                filename[len] = '\0';
+                bar(340, 240, 550 - 1, 290 - 1, WHITE);
+                TextASC24(340, 240, 14, 0, filename);
+            }
+        }
+        else if(key == Enter){
+            return 1;
+        }
+        else if((key & 0xff) != 0 && len < 13){
+            filename[len] = key & 0xff;
+            filename[len + 1] = '\0';
+            len++;
+            TextASC24(340, 240, 14, 0, filename);
+        }
+    }
+    return 0;
+}
+
+void savePhase(Image *image){
+    Mouse mouseOld,mouseNew;
+    Image bg;
+    int i,j,x,y;
+    char s[20] = "temp\\";
+    char fileName[12] = "result.bmp";
+    bg.x = 300,bg.y = 150,bg.height = 230 + 40,bg.width = 300 + 40; 
+    x = 300,y = 150;
+    strcpy(bg.cachePath,"temp\\bgpic.tmp");
+    saveImageCache(&bg);
+    bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
+    bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
+    bar(x + 250,y + 0,x + 300 - 1,y + 55 - 1,RED);
+    bar(x + 0,y + 200,x + 300 - 1,y + 230 - 1,BLUE);
+    bar(x + 100,y + 195,x + 200 - 1,y + 225 - 1,TIANYILAN);
+    bar(x + 40,y + 90,x + 250 - 1,y + 140 - 1,WHITE);
+    line(x+250,y+0,x+300,y+55,WHITE);
+    line(x+300,y+0,x+250,y+55,WHITE);
+    TextGB64(x + 30,y,50,WHITE,"保存图片",0);
+    TextGB32(x + 110,y + 195,40,WHITE,"确定");
+    TextASC24(340, 240, 14, 0, fileName);
+    while(1){
+        mouseStatus(&mouseNew);
+        if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
+            continue;
+        else{
+            mousePutBk(mouseOld.x, mouseOld.y);
+            mouseStoreBk(mouseNew.x, mouseNew.y);
+            mouseDraw(mouseNew);
+            if(mouseDown(x+250,y+0,x+300,y+55)){
+                break;
+            }
+            if(mouseDown(x + 40,y + 90,x + 250,y + 140)){
+                mousePutBk(mouseNew.x,mouseNew.y);
+                inputPhase(fileName);
+                mouseStoreBk(mouseNew.x,mouseNew.y);
+            }
+            if(mouseDown(x + 100,y + 195,x + 200,y + 225)){
+                mousePutBk(mouseNew.x,mouseNew.y);
+                putImage(&bg,x,y);
+                strcat(s,fileName);
+                if(saveBMP(image->x,image->y,image->x + image->height,image->y + image->width,s) == 1)
+                    return;
+                else{
+                    strcpy(s,"temp\\");
+                    msgPhase(200,200,"保存失败");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                    return;
+                }
+            }
+            mouseOld = mouseNew;
+        }
+    }
+    putImage(&bg,x,y);
 }
