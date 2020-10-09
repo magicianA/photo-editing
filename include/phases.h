@@ -26,9 +26,11 @@ void goodbyePhase();
 void adjustPhase(Image *image);
 void fliterPhase(Image *image);
 void msgPhase(int x,int y,char *s);
-int inputPhase(char* filename);
+int inputPhase(char* filename,int flag,int dx,int dy);
 void savePhase(Image *image);
 void openPhase(Image *image);
 void zoomPhase(Image *image);
+void newPhase(Image *image);
+void colorPhase(u32 *pColor);
 
 #endif

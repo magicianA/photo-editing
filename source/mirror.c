@@ -61,3 +61,59 @@ void spin(Image *image,u32 cl){
     fclose(fp);
     saveImageCache(image);
 }
+int drawLine(Image *image,int x1,int x2,int y1,int y2,u32 color){
+    int x,y,width,height;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    if(x<x1&&x1<x+width&&x<x2&&x2<x+width&&y<y1&&y1<y+height&&y<y2&&y2<y+height){
+        line(x1,y1,x2,y2,color);
+    }
+    else{
+        return 0;
+    }
+    saveImageCache(image);
+    return 1;
+}
+
+int drawBarEmpty(Image *image,int x1,int x2,int y1,int y2,u32 color){
+    int x,y,width,height;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    if(x<x1&&x1<x+width&&x<x2&&x2<x+width&&y<y1&&y1<y+height&&y<y2&&y2<y+height){
+        line(x1,y1,x1,y2,color);
+        line(x1,y2,x2,y2,color);
+        line(x2,y1,x2,y2,color);
+        line(x1,y1,x2,y1,color);
+    }
+    else{
+        return 0;
+    }
+    saveImageCache(image);
+    return 1;
+}
+
+int drawBarFilled(Image *image,int x1,int x2,int y1,int y2,u32 color){
+    int x,y,width,height;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    if(x<x1&&x1<x+width&&x<x2&&x2<x+width&&y<y1&&y1<y+height&&y<y2&&y2<y+height){
+        bar(x1,y1,x2,y2,color);
+    }
+    else{
+        return 0;
+    }
+    saveImageCache(image);
+    return 1;
+}
+
+int drawTriangle(Image *image,int x1,int x2,int x3,int y1,int y2,int y3,u32 color){
+    int x,y,width,height;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    if(x<x1&&x1<x+width&&x<x2&&x2<x+width&&x<x3&&x3<x+width&&y<y1&&y1<y+height&&y<y2&&y2<y+height&&y<y3&&y3<y+height){
+        line(x1,y1,x2,y2,color);
+        line(x1,y1,x3,y3,color);
+        line(x2,y2,x3,y3,color);
+    }
+    else{
+        return 0;
+    }
+    saveImageCache(image);
+    return 1;
+}

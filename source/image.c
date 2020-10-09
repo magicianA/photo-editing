@@ -638,3 +638,139 @@ void closeImage(Image *image){
     image->x = image-> y = image->width = image->height = 0;
     strcpy(image->cachePath,"");
 }
+
+void milt(Image *image){
+    int i,j;
+    int x,y,width,height;
+    int r,g,b;
+    u32 color;
+    RGB res;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    for(i=x;i<x+width;i++){
+        for(j=y;j<y+height;j++){
+            color=getPixel(i,j);
+            res=getRGB(color >> 16,(color >> 8) & 0xff,color & 0xff);
+            r=res.r*128/(res.g+res.b+1);
+            g=res.g*128/(res.b+res.r+1);
+            b=res.b*128/(res.r+res.g+1);
+            res.r=r;
+            res.g=g;
+            res.b=b;
+            res.r=min(r,255);
+            res.g=min(g,255);
+            res.b=min(b,255);
+            res.r=max(res.r,0);
+            res.g=max(res.g,0);
+            res.b=max(res.b,0);
+            putPixel(i,j,RGB2u32(res));
+        }
+    }
+    saveImageCache(image);    
+}
+
+
+void cartoon(Image *image){
+    int i,j;
+    int x,y,width,height;
+    double r,g,b,r1,g1,b1;
+    u32 color;
+    RGB res;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    for(i=x;i<x+width;i++){
+        for(j=y;j<y+height;j++){
+            color=getPixel(i,j);
+            res=getRGB(color >> 16,(color >> 8) & 0xff,color & 0xff);
+            r=res.r;
+            g=res.g;
+            b=res.b;
+            r1=abs(g-b+g+r)*r/256;
+            g1=abs(b-g+b+r)*r/256;
+            b1=abs(b-g+b+r)*g/256;
+            res.r=min(r1,255);
+            res.g=min(g1,255);
+            res.b=min(b1,255);
+            putPixel(i,j,RGB2u32(res));
+        }
+    }
+    saveImageCache(image);     
+}
+
+
+void extreme(Image *image){
+    int i,j;
+    int x,y,width,height;
+    u32 color;
+    RGB res;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    for(i=x;i<x+width;i++){
+        for(j=y;j<y+height;j++){
+            color=getPixel(i,j);
+            res=getRGB(color >> 16,(color >> 8) & 0xff,color & 0xff);
+            if(res.r+res.g+res.b>=300){
+                res.r=255;
+                res.g=255;
+                res.b=255;
+            }
+            else{
+                res.r=0;
+                res.g=0;
+                res.b=0;
+            }
+            putPixel(i,j,RGB2u32(res));
+        }
+    }
+    saveImageCache(image);     
+}
+void singleRed(Image *image){
+    int i,j;
+    int x,y,width,height;
+    u32 color;
+    RGB res;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    for(i=x;i<x+width;i++){
+        for(j=y;j<y+height;j++){
+            color=getPixel(i,j);
+            res=getRGB(color >> 16,(color >> 8) & 0xff,color & 0xff);
+            res.g=0;
+            res.b=0;
+            putPixel(i,j,RGB2u32(res));
+        }
+    }
+    saveImageCache(image);     
+}
+
+void singleGreen(Image *image){
+    int i,j;
+    int x,y,width,height;
+    u32 color;
+    RGB res;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    for(i=x;i<x+width;i++){
+        for(j=y;j<y+height;j++){
+            color=getPixel(i,j);
+            res=getRGB(color >> 16,(color >> 8) & 0xff,color & 0xff);
+            res.r=0;
+            res.b=0;
+            putPixel(i,j,RGB2u32(res));
+        }
+    }
+    saveImageCache(image);     
+}
+
+void singleBlue(Image *image){
+    int i,j;
+    int x,y,width,height;
+    u32 color;
+    RGB res;
+    x=image->x,y=image->y,width=image->width,height=image->height;
+    for(i=x;i<x+width;i++){
+        for(j=y;j<y+height;j++){
+            color=getPixel(i,j);
+            res=getRGB(color >> 16,(color >> 8) & 0xff,color & 0xff);
+            res.r=0;
+            res.g=0;
+            putPixel(i,j,RGB2u32(res));
+        }
+    }
+    saveImageCache(image);     
+}
