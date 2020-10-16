@@ -83,7 +83,7 @@ void old(Image *image);
 //void frozen(Image *image);
 void closeImage(Image *image);
 void reverse(Image *image);
-void milt(Image *image);
+void melt(Image *image);
 void cartoon(Image *image);
 void extreme(Image *image);
 void singleRed(Image *image);

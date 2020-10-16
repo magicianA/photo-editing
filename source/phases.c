@@ -236,7 +236,7 @@ void fliterPhase(Image *image){
     Mouse mouseOld,mouseNew;
     Image bg;
     char fliterNames[15][20];
-    void (*filterFunc[15])(Image *) = {&old,&reverse,&gray,&sharpen,&blur,&curve,&movingBlur,&unsharpen,&milt,&cartoon,&extreme,&singleRed,&singleGreen,&singleBlue,NULL};
+    void (*filterFunc[15])(Image *) = {&old,&reverse,&gray,&sharpen,&blur,&curve,&movingBlur,&unsharpen,&melt,&cartoon,&extreme,&singleRed,&singleGreen,&singleBlue,NULL};
     int curfilter = -1,curPage = 0;
     int filtercount = 14;
     int i,j,x,y;
@@ -423,6 +423,7 @@ void adjustPhase(Image *image){
 void mainPhase(){
     Image image = {0};
     Mouse mouseOld,mouseNew;
+    int curPage = 0;
 	bar(0,0,SCR_WIDTH,SCR_HEIGHT,WHITE);
     bar(0,0,64,570,TIANYILAN);
     bar(0,0,800,64,TIANYILAN);
@@ -459,25 +460,51 @@ void mainPhase(){
                 mouseStoreBk(mouseNew.x,mouseNew.y);
             }
             if(mouseDown(0,64,64,128)){
-                if(image.height != 0){
-                    spin(&image,WHITE);
-                }
-                else{
-                    mousePutBk(mouseNew.x,mouseNew.y);
-                    msgPhase(200,200,"未打开图片");
-                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                if(curPage == 0){
+                    if(image.height != 0){
+                        spin(&image,WHITE);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                }else if(curPage == 1){
+                    if(image.height != 0){
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        linePhase(&image,WHITE);
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
                 }
             }
             if(mouseDown(0,128,64,192)){
-                if(image.height != 0){
-                    mousePutBk(mouseNew.x,mouseNew.y);
-                    cutPhase(&image);
-                    mouseStoreBk(mouseNew.x,mouseNew.y);
-                }
-                else{
-                    mousePutBk(mouseNew.x,mouseNew.y);
-                    msgPhase(200,200,"未打开图片");
-                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                if(curPage == 0){
+                    if(image.height != 0){
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        cutPhase(&image);
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                }else if(curPage == 1){
+                    if(image.height != 0){
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        trianglePhase(&image,WHITE);
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
                 }
             }
             if(mouseDown(3+128,0,3+192,64)){
@@ -494,49 +521,91 @@ void mainPhase(){
                 }
             }
             if(mouseDown(0,192,64,256)){
-                if(image.height != 0){
-                    mousePutBk(mouseNew.x,mouseNew.y);
-                    fliterPhase(&image);
-                    mouseStoreBk(mouseNew.x,mouseNew.y);
-                }
-                else{
-                    mousePutBk(mouseNew.x,mouseNew.y);
-                    msgPhase(200,200,"未打开图片");
-                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                if(curPage == 0){
+                    if(image.height != 0){
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        fliterPhase(&image);
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                }else if(curPage == 1){
+                    if(image.height != 0){
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        emptyBarPhase(&image,WHITE);
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
                 }
             }
             if(mouseDown(0,320,64,384)){
-                if(image.height != 0){
-                    mirror(&image);
-                }
-                else{
-                    mousePutBk(mouseNew.x,mouseNew.y);
-                    msgPhase(200,200,"未打开图片");
-                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                if(curPage == 0){
+                    if(image.height != 0){
+                        mirror(&image);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    } 
+                }else if(curPage == 1){
+                    if(image.height != 0){
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        delay(20);
+                        drawFreePhase(&image,WHITE);
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
                 }
             }
             if(mouseDown(0,256,64,320)){
-                if(image.height != 0){
-                    mousePutBk(mouseNew.x,mouseNew.y);
-                    adjustPhase(&image);
-                    mouseStoreBk(mouseNew.x,mouseNew.y);
-                }
-                else{
-                    mousePutBk(mouseNew.x,mouseNew.y);
-                    msgPhase(200,200,"未打开图片");
-                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                if(curPage == 0){
+                    if(image.height != 0){
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        adjustPhase(&image);
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                }else if(curPage == 1){
+                    if(image.height != 0){
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        filledBarPhase(&image,WHITE);
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
                 }
             }
             if(mouseDown(0,384+5,64,448+5)){
-                if(image.height != 0){
-                    mousePutBk(mouseNew.x,mouseNew.y);
-                    zoomPhase(&image);
-                    mouseStoreBk(mouseNew.x,mouseNew.y);
-                }
-                else{
-                    mousePutBk(mouseNew.x,mouseNew.y);
-                    msgPhase(200,200,"未打开图片");
-                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                if(curPage == 0){
+                    if(image.height != 0){
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        zoomPhase(&image);
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
                 }
             }
             if(mouseDown(3+192,0,256,64)){
@@ -555,9 +624,30 @@ void mainPhase(){
                 }
             }
             if(mouseDown(0,448 + 10,64,512 + 10)){
-                mousePutBk(mouseNew.x,mouseNew.y);
-                colorPhase(&image);
-                mouseStoreBk(mouseNew.x,mouseNew.y);
+                if(curPage == 0){
+                    mousePutBk(mouseNew.x,mouseNew.y);
+                    curPage++;
+                    bar(0,64,64,570,TIANYILAN);
+                    putUI("ui\\line.bmp",0,64,-1);
+                    putUI("ui\\triangle.bmp",0,128,-1);
+                    putUI("ui\\rect.bmp",0,192,-1);
+                    putUI("ui\\bar.bmp",0,256,-1);
+                    putUI("ui\\pbrush.bmp",0,320,-1);
+                    putUI("ui\\return.bmp",0,448 + 10,-1);
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }else if(curPage == 1){
+                    mousePutBk(mouseNew.x,mouseNew.y);
+                    curPage--;
+                    bar(0,64,64,570,TIANYILAN);
+                    putUI("ui\\spin.bmp",0,64,-1);
+                    putUI("ui\\cut.bmp",0,128,-1);
+                    putUI("ui\\rgb.bmp",0,192,-1);
+                    putUI("ui\\adjust.bmp",0,256,-1);
+                    putUI("ui\\reflect.bmp",0,320,-1);
+                    putUI("ui\\resize.bmp",0,384 + 5,-1);
+                    putUI("ui\\brush.bmp",0,448 + 10,-1);
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                }
             }
             mouseOld = mouseNew;
         }
@@ -908,4 +998,26 @@ void colorPhase(u32 *pColor){
         }
     }
     putImage(&bg,x,y);
+}
+
+void drawFreePhase(Image *image,u32 color){
+    Mouse mouseOld,mouseNew;
+    mouseStatus(&mouseOld);
+    mouseStoreBk(mouseOld.x,mouseOld.y);
+    while(1){
+        mouseStatus(&mouseNew);
+        if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
+            continue;
+        else{
+            mousePutBk(mouseOld.x, mouseOld.y);
+            mouseStoreBk(mouseNew.x, mouseNew.y);
+            mouseDraw(mouseNew);
+            if(!mouseDown(0,0,SCR_WIDTH,SCR_HEIGHT)){
+                break;
+            }else if(mouseDown(image->x,image->y,image->x + image->width - 1,image->y + image->height - 1)){
+                putPixel(mouseNew.x,mouseNew.y,color);
+            }
+            mouseOld = mouseNew;
+        }
+    }
 }

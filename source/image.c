@@ -639,7 +639,7 @@ void closeImage(Image *image){
     strcpy(image->cachePath,"");
 }
 
-void milt(Image *image){
+void melt(Image *image){
     int i,j;
     int x,y,width,height;
     int r,g,b;

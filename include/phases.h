@@ -32,5 +32,7 @@ void openPhase(Image *image);
 void zoomPhase(Image *image);
 void newPhase(Image *image);
 void colorPhase(u32 *pColor);
+void drawFreePhase(Image *image,u32 color);
+
 
 #endif
