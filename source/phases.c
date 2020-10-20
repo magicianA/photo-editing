@@ -216,6 +216,8 @@ void msgPhase(int x,int y,char *s){
     TextGB64(x + 100,y,50,WHITE,"提示",0);
     TextGB32(x + 110,y + 165,40,WHITE,"确定");
     TextGB32(x + 10,y + 100,40,BLACK,s);
+    mouseStatus(&mouseOld);
+    mouseStoreBk(mouseOld.x,mouseOld.y);
     while(1){
         mouseStatus(&mouseNew);
         if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
@@ -559,7 +561,7 @@ void mainPhase(){
                     if(image.height != 0){
                         mousePutBk(mouseNew.x,mouseNew.y);
                         delay(20);
-                        drawFreePhase(&image,WHITE);
+                        drawFreePhase(&image,BLACK);
                         mouseStoreBk(mouseNew.x,mouseNew.y);
                     }
                     else{
@@ -795,7 +797,7 @@ void savePhase(Image *image){
                 mousePutBk(mouseNew.x,mouseNew.y);
                 putImage(&bg,x,y);
                 strcat(s,fileName);
-                if(saveBMP(image->x,image->y,image->x + image->height,image->y + image->width,s) == 1)
+                if(saveBMP(image->x,image->y,image->x + image->width,image->y + image->height,s) == 1)
                     return;
                 else{
                     strcpy(s,"temp\\");
@@ -945,7 +947,7 @@ void newPhase(Image *image){
                     mousePutBk(mouseNew.x,mouseNew.y);
                     putImage(&bg,x,y);
                     mouseStoreBk(mouseNew.x,mouseNew.y);
-                    strcpy(image->cachePath,"newpic.tmp");
+                    strcpy(image->cachePath,"temp\\newpic.tmp");
                     for(i = 0;i < pWidth;i++){
                         for(j = 0;j < pHeight;j++){
                             putPixel(image->x + i,image->y + j,GRAY);
@@ -1004,6 +1006,7 @@ void drawFreePhase(Image *image,u32 color){
     Mouse mouseOld,mouseNew;
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x,mouseOld.y);
+    TextGB16(200,571,15,WHITE,"点击图片以开始,点击“返回”图标退出");
     while(1){
         mouseStatus(&mouseNew);
         if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
@@ -1012,12 +1015,19 @@ void drawFreePhase(Image *image,u32 color){
             mousePutBk(mouseOld.x, mouseOld.y);
             mouseStoreBk(mouseNew.x, mouseNew.y);
             mouseDraw(mouseNew);
-            if(!mouseDown(0,0,SCR_WIDTH,SCR_HEIGHT)){
+            if(mouseDown(image->x,image->y,image->x + image->width - 1,image->y + image->height - 1)){
+                mousePutBk(mouseNew.x,mouseNew.y);
+                bar(200,571,500,600,GRAY);
+                drawFree(image,color);
                 break;
-            }else if(mouseDown(image->x,image->y,image->x + image->width - 1,image->y + image->height - 1)){
-                putPixel(mouseNew.x,mouseNew.y,color);
             }
-            mouseOld = mouseNew;
+            if(mouseDown(0,448 + 10,64,512 + 10)){
+                mousePutBk(mouseNew.x,mouseNew.y);
+                bar(200,571,500,600,GRAY);
+                break;
+            }
         }
+        mouseOld = mouseNew;		
     }
+    delay(100);
 }

@@ -117,3 +117,26 @@ int drawTriangle(Image *image,int x1,int x2,int x3,int y1,int y2,int y3,u32 colo
     saveImageCache(image);
     return 1;
 }
+
+
+void drawFree(Image *image,u32 color){
+    Mouse mouseOld,mouseNew;
+    mouseStatus(&mouseOld);
+    mouseStoreBk(mouseOld.x,mouseOld.y);
+    while(1){
+        mouseStatus(&mouseNew);
+        if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
+            continue;
+        else{
+            if(!mouseDown(0,0,SCR_WIDTH,SCR_HEIGHT)){
+                break;
+            }else if(mouseNew.x >= image->x && mouseNew.x < image->x + image->width  - 1 && mouseNew.y >= image->y && mouseNew.y < image->y + image->height - 1){
+                putPixel(mouseNew.x,mouseNew.y,color);
+                putPixel(mouseNew.x + 1,mouseNew.y,color);
+                putPixel(mouseNew.x,mouseNew.y + 1,color);
+                putPixel(mouseNew.x + 1,mouseNew.y + 1,color);
+            }
+            mouseOld = mouseNew;
+        }
+    }
+}
