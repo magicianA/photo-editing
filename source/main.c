@@ -3,8 +3,10 @@
 int main()
 {
 	setSVGA();
+	welcomePhase();
+	//testPhase();
 	mainPhase();
-	//goodbyePhase();
+	goodbyePhase();
 	delay(200);
     return 0;
 }

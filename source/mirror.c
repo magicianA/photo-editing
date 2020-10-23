@@ -140,3 +140,43 @@ void drawFree(Image *image,u32 color){
         }
     }
 }
+void colorBoard(int x,int y){
+    int i,j;
+    u32 color;
+    HSL hsl;
+    hsl.h=0;
+    hsl.s=0.2;
+    hsl.l=0.5;
+    for(i=x+0;i<x+130;i++){
+        hsl.h=0;
+        hsl.s=hsl.s+0.8/130;
+        for(j=y+0;j<y+210;j++){
+            hsl.h=hsl.h+360.0/210;
+            color=RGB2u32(HSL2RGB(hsl));
+            putPixel(i,j,color);
+        }
+    }
+}
+
+HSL colorBoardSide(int x,int y,int x1,int y1){
+    int i,j,x2,y2;
+    u32 color;
+    HSL hsl;
+    RGB res;
+    color=TIANYILAN;
+    x2=x1-310;
+    y2=y1-215;
+    res=getRGB(color >> 16,(color >> 8) & 0xff,color & 0xff);
+    hsl=RGB2HSL(res);
+    hsl.h=0+y2*360.0/210;
+    hsl.s=0.2+x2*0.8/130;
+    hsl.l=0;
+    for(i=x+0;i<x+140;i++){
+        hsl.l=hsl.l+1.0/140;
+        for(j=y+0;j<y+50;j++){
+            color=RGB2u32(HSL2RGB(hsl));
+            putPixel(i,j,color);
+        }
+    }
+    return hsl;
+}

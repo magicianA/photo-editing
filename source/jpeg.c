@@ -1,15 +1,23 @@
 #include"jpeg.h"
 
 void saveJPEG(int x0,int y0){
-    double y[8][8],cb[8][8],cr[8][8];
+    double _y[8][8],_cb[8][8],_cr[8][8];
+    double __y[8][8],__cb[8][8],__cr[8][8];
+    int y[8][8],cb[8][8],cr[8][8];
     int i,j;
     for(i = 0;i < 8;i++){
         for(j = 0;j < 8;j++){
-            y[i][j] = 0.299 * getRed(x0+i,y0+j) + 0.5870 * getGreen(x0+i,y0+j) + 0.114 * getBlue(x0+i,y0+j);
-            cb[i][j] = -0.1687 * getRed(x0+i,y0+j) - 0.33113 * getGreen(x0+i,y0+j) + 0.5 * getBlue(x0+i,y0+j);
-            cr[i][j] = 0.5 * getRed(x0+i,y0+j) - 0.41887 * getGreen(x0+i,y0+j) - 0.0813 * getBlue(x0+i,y0+j);
+            _y[i][j] = 0.299 * getRed(x0+i,y0+j) + 0.5870 * getGreen(x0+i,y0+j) + 0.114 * getBlue(x0+i,y0+j);
+            _cb[i][j] = -0.1687 * getRed(x0+i,y0+j) - 0.33113 * getGreen(x0+i,y0+j) + 0.5 * getBlue(x0+i,y0+j);
+            _cr[i][j] = 0.5 * getRed(x0+i,y0+j) - 0.41887 * getGreen(x0+i,y0+j) - 0.0813 * getBlue(x0+i,y0+j);
         }
     }
+    dct(__y,_y);
+    dct(__cb,_cb);
+    dct(__cr,_cr);
+    quantization(__y,0,y);
+    quantization(__cb,1,cb);
+    quantization(__cr,1,cr);
 }
 
 double alpha(double x){
@@ -38,7 +46,7 @@ double round(double x){
     if(x < 0) sign = -1; 
     return sign * (int)(fabs(x) + 0.5);
 }
-void quantization(double a[][8],int flag){
+void quantization(double a[][8],int flag,int dest[][8]){
     const char LQT[][8] = {
         16,  11,  10,  16,  24,  40,  51,  61,
         12,  12,  14,  19,  26,  58,  60,  55,
@@ -64,11 +72,10 @@ void quantization(double a[][8],int flag){
     for(i = 0;i < 8;i++){
         for(j = 0;j < 8;j++){
             if(flag == 0){
-                a[i][j] /= LQT[i][j];
+                dest[i][j] = round(a[i][j] / LQT[i][j]);
             }else{
-                a[i][j] /= CQT[i][j];
+                dest[i][j] = round(a[i][j] / CQT[i][j]);
             }
-            a[i][j] = round(a[i][j]);
         }
     }
 }

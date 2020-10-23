@@ -10,6 +10,7 @@
 #include"mirror.h"
 #include"text.h"
 #include"image.h"
+#include"jpeg.h"
 
 
 #define ESC 0x011b
@@ -31,8 +32,9 @@ void savePhase(Image *image);
 void openPhase(Image *image);
 void zoomPhase(Image *image);
 void newPhase(Image *image);
-void colorPhase(u32 *pColor);
+u32 colorPhase();
 void drawFreePhase(Image *image,u32 color);
+void welcomePhase();
 
 
 #endif

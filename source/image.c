@@ -23,20 +23,20 @@ void showGoodbyeImage(){
 
 
 int readBMP(Image *image,const char *path,int x,int y,int flag){
-	int i, j;
-	BGR *buffer;
+    int i, j;
+    BGR *buffer;
     char temp[25];
-	u32 color24;
-	u32 linebytes;
-	FILE *fp = fopen(path, "rb");
+    u32 color24;
+    u32 linebytes;
+    FILE *fp = fopen(path, "rb");
     FILE *ft;
-	BITMAPFILEHEADER bmphead;
-	BITMAPINFOHEADER bmpinfo;
+    BITMAPFILEHEADER bmphead;
+    BITMAPINFOHEADER bmpinfo;
 
     strcpy(temp,path);
     strcpy(strstr(temp,".bmp"),".tmp");
-	if(fp)
-	{
+    if(fp)
+    {
         fread(&bmphead,sizeof(bmphead),1,fp);
         fread(&bmpinfo,sizeof(bmpinfo),1,fp);
         if(bmphead.bfType != 0x4d42 || bmpinfo.biBitCount != 24u || bmpinfo.biCompression != 0ul || bmpinfo.biWidth > SCR_WIDTH ||
@@ -44,30 +44,31 @@ int readBMP(Image *image,const char *path,int x,int y,int flag){
             fclose(fp);
             return 0;
         }
+        if(flag){ //auto resolution fitting
+            x = 432 - bmpinfo.biWidth / 2;
+            y = 317 - bmpinfo.biHeight / 2;
+        }
+        linebytes = (3 * bmpinfo.biWidth) % 4;
+        if (!linebytes)
+            linebytes = 3 * bmpinfo.biWidth;
+        else
+            linebytes = 3 * bmpinfo.biWidth + 4 - linebytes;
 
-		linebytes = (3 * bmpinfo.biWidth) % 4;
-		if (!linebytes)
-			linebytes = 3 * bmpinfo.biWidth;
-		else
-			linebytes = 3 * bmpinfo.biWidth + 4 - linebytes;
+        if ((buffer = (BGR*)malloc(linebytes)) == 0)
+        {
+            fclose(fp);
+            return -1;
+        }
 
-		if ((buffer = (BGR*)malloc(linebytes)) == 0)
-		{
-			fclose(fp);
-			return -1;
-		}
-
-		fseek(fp, 54L, 0);
-        if(flag){
-		    for (i = bmpinfo.biHeight - 1; i > -1; i--)
-		    {
-			    fread(buffer, linebytes, 1, fp);
-		        for (j = 0; j < bmpinfo.biWidth; j++)
-		        {
-			        color24 = ((u32)buffer[j].r) << 16 | ((u32)buffer[j].g) << 8 | ((u32)buffer[j].b);
-			        putPixel(j + x, i + y, color24);
-		        }
-		    }
+        fseek(fp, 54L, 0);
+        for (i = bmpinfo.biHeight - 1; i > -1; i--)
+        {
+            fread(buffer, linebytes, 1, fp);
+            for (j = 0; j < bmpinfo.biWidth; j++)
+            {
+                color24 = ((u32)buffer[j].r) << 16 | ((u32)buffer[j].g) << 8 | ((u32)buffer[j].b);
+                putPixel(j + x, i + y, color24);
+            }
         }
         free(buffer);
         if((ft = fopen(temp,"wb"))== 0) return 0;
@@ -76,20 +77,20 @@ int readBMP(Image *image,const char *path,int x,int y,int flag){
         image->width = bmpinfo.biWidth;
         image->x = x;
         image->y = y;
-		strcpy(image->cachePath,temp);
+        strcpy(image->cachePath,temp);
         for(i = 0;i < image->width;i++){
             for(j = 0;j < image->height;j++){
                 color24 = getPixel(x + i,y + j);
                 fwrite(&color24,4,1,ft);
             }
         }
-		fclose(fp);
+        fclose(fp);
         fclose(ft);
-	}
-	else{
-		return -1;
-	}
-	return 1;
+    }
+    else{
+        return -1;
+    }
+    return 1;
 }
 
 int saveBMP(int x1,int y1,int x2,int y2,char* path)
@@ -635,6 +636,7 @@ void closeImage(Image *image){
             putPixel(x + i,y + j,WHITE);
         }
     }
+    remove(image->cachePath);
     image->x = image-> y = image->width = image->height = 0;
     strcpy(image->cachePath,"");
 }

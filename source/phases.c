@@ -195,7 +195,7 @@ void testPhase(){
             mouseDraw(mouseNew);
             if(mouseDown(300,300,332,332)){
                 mousePutBk(mouseNew.x,mouseNew.y);
-                zoom(&image,0.8,1.2);
+                saveJPEG(400,200);
                 getch();
                 break;
             }
@@ -304,6 +304,7 @@ void fliterPhase(Image *image){
                     TextGB32(x + 10,y + 110,30,WHITE,fliterNames[1 + curPage * 3]);
                     bar(x + 10,y + 150,x + 220,y + 180,PINK);
                     TextGB32(x + 10,y + 150,30,WHITE,fliterNames[2 + curPage * 3]);
+                    delay(100);
                 }
             }
             if(mouseDown(x + 230,y + 110,x + 270,y + 150)){
@@ -315,6 +316,7 @@ void fliterPhase(Image *image){
                     TextGB32(x + 10,y + 110,30,WHITE,fliterNames[1 + curPage * 3]);
                     bar(x + 10,y + 150,x + 220,y + 180,PINK);
                     TextGB32(x + 10,y + 150,30,WHITE,fliterNames[2 + curPage * 3]);
+                    delay(100);
                 }
             }
             if(mouseDown(x + 10,y + 70,x + 220,y + 100)){
@@ -425,6 +427,7 @@ void adjustPhase(Image *image){
 void mainPhase(){
     Image image = {0};
     Mouse mouseOld,mouseNew;
+    u32 curColor = BLACK;
     int curPage = 0;
 	bar(0,0,SCR_WIDTH,SCR_HEIGHT,WHITE);
     bar(0,0,64,570,TIANYILAN);
@@ -464,7 +467,13 @@ void mainPhase(){
             if(mouseDown(0,64,64,128)){
                 if(curPage == 0){
                     if(image.height != 0){
-                        spin(&image,WHITE);
+                        if(image.height < BMP_WIDTH_MAX && image.width < BMP_HEIGTH_MAX)
+                            spin(&image,WHITE);
+                        else{
+                            mousePutBk(mouseNew.x,mouseNew.y);
+                            msgPhase(200,200,"旋转失败");
+                            mouseStoreBk(mouseNew.x,mouseNew.y);
+                        }
                     }
                     else{
                         mousePutBk(mouseNew.x,mouseNew.y);
@@ -474,7 +483,7 @@ void mainPhase(){
                 }else if(curPage == 1){
                     if(image.height != 0){
                         mousePutBk(mouseNew.x,mouseNew.y);
-                        linePhase(&image,WHITE);
+                        linePhase(&image,curColor);
                         mouseStoreBk(mouseNew.x,mouseNew.y);
                     }
                     else{
@@ -499,7 +508,7 @@ void mainPhase(){
                 }else if(curPage == 1){
                     if(image.height != 0){
                         mousePutBk(mouseNew.x,mouseNew.y);
-                        trianglePhase(&image,WHITE);
+                        trianglePhase(&image,curColor);
                         mouseStoreBk(mouseNew.x,mouseNew.y);
                     }
                     else{
@@ -537,7 +546,7 @@ void mainPhase(){
                 }else if(curPage == 1){
                     if(image.height != 0){
                         mousePutBk(mouseNew.x,mouseNew.y);
-                        emptyBarPhase(&image,WHITE);
+                        emptyBarPhase(&image,curColor);
                         mouseStoreBk(mouseNew.x,mouseNew.y);
                     }
                     else{
@@ -561,7 +570,7 @@ void mainPhase(){
                     if(image.height != 0){
                         mousePutBk(mouseNew.x,mouseNew.y);
                         delay(20);
-                        drawFreePhase(&image,BLACK);
+                        drawFreePhase(&image,curColor);
                         mouseStoreBk(mouseNew.x,mouseNew.y);
                     }
                     else{
@@ -586,7 +595,7 @@ void mainPhase(){
                 }else if(curPage == 1){
                     if(image.height != 0){
                         mousePutBk(mouseNew.x,mouseNew.y);
-                        filledBarPhase(&image,WHITE);
+                        filledBarPhase(&image,curColor);
                         mouseStoreBk(mouseNew.x,mouseNew.y);
                     }
                     else{
@@ -608,6 +617,17 @@ void mainPhase(){
                         msgPhase(200,200,"未打开图片");
                         mouseStoreBk(mouseNew.x,mouseNew.y);
                     }
+                }else if(curPage == 1){
+                    if(image.height != 0){
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        curColor = colorPhase();
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }
+                    else{
+                        mousePutBk(mouseNew.x,mouseNew.y);
+                        msgPhase(200,200,"未打开图片");
+                        mouseStoreBk(mouseNew.x,mouseNew.y);
+                    }                   
                 }
             }
             if(mouseDown(3+192,0,256,64)){
@@ -635,7 +655,9 @@ void mainPhase(){
                     putUI("ui\\rect.bmp",0,192,-1);
                     putUI("ui\\bar.bmp",0,256,-1);
                     putUI("ui\\pbrush.bmp",0,320,-1);
+                    putUI("ui\\color.bmp",0,384 + 5,-1);
                     putUI("ui\\return.bmp",0,448 + 10,-1);
+                    delay(100);
                     mouseStoreBk(mouseNew.x,mouseNew.y);
                 }else if(curPage == 1){
                     mousePutBk(mouseNew.x,mouseNew.y);
@@ -648,19 +670,25 @@ void mainPhase(){
                     putUI("ui\\reflect.bmp",0,320,-1);
                     putUI("ui\\resize.bmp",0,384 + 5,-1);
                     putUI("ui\\brush.bmp",0,448 + 10,-1);
+                    delay(100);
                     mouseStoreBk(mouseNew.x,mouseNew.y);
                 }
             }
             mouseOld = mouseNew;
         }
     }
+    remove("temp\\bgpic.tmp");
+    remove("temp\\msgbgpic.tmp");
+    if(image.height != 0){
+        remove(image.cachePath);
+    }
 }
 void openPhase(Image *image){
     Mouse mouseOld,mouseNew;
     Image bg;
     int i,j,x,y;
-    char s[20] = "temp\\";
-    char fileName[10] = "timg.bmp";
+    char s[25] = "temp\\";
+    char fileName[15] = "timg.bmp";
     if(image->height != 0){
         msgPhase(200,200,"您已打开图片");
         return;
@@ -797,8 +825,13 @@ void savePhase(Image *image){
                 mousePutBk(mouseNew.x,mouseNew.y);
                 putImage(&bg,x,y);
                 strcat(s,fileName);
-                if(saveBMP(image->x,image->y,image->x + image->width,image->y + image->height,s) == 1)
+                if(saveBMP(image->x,image->y,image->x + image->width,image->y + image->height,s) == 1){
+                    mousePutBk(mouseNew.x,mouseNew.y);
+                    msgPhase(200,200,"保存成功");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
+                    delay(100);
                     return;
+                }
                 else{
                     strcpy(s,"temp\\");
                     msgPhase(200,200,"保存失败");
@@ -942,7 +975,7 @@ void newPhase(Image *image){
                 pWidth = atoi(sx);
                 pHeight = atoi(sy);
                 if(pWidth >= BMP_WIDTH_MIN && pWidth <= BMP_WIDTH_MAX && pHeight >= BMP_HEIGTH_MIN && pHeight <= BMP_HEIGTH_MAX){
-                    image->x = 300,image->y = 150;
+                    image->x = 432 - pWidth / 2,image->y = 317 - pHeight / 2;
                     image->width = pWidth,image->height = pHeight;
                     mousePutBk(mouseNew.x,mouseNew.y);
                     putImage(&bg,x,y);
@@ -955,46 +988,11 @@ void newPhase(Image *image){
                     }
                     saveImageCache(image);
                     return;
+                }else{     
+                    mousePutBk(mouseNew.x,mouseNew.y);
+                    msgPhase(200,200,"图片大小过大");
+                    mouseStoreBk(mouseNew.x,mouseNew.y);
                 }
-            }
-            mouseOld = mouseNew;
-        }
-    }
-    putImage(&bg,x,y);
-}
-
-void colorPhase(u32 *pColor){
-    Mouse mouseOld = {0},mouseNew = {0};
-    Image bg;
-    int i,j,x,y;
-    bg.x = 300,bg.y = 150,bg.height = 280 + 40,bg.width = 300 + 40; 
-    x = 300,y = 150;
-    strcpy(bg.cachePath,"temp\\bgpic.tmp");
-    saveImageCache(&bg);
-    bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
-    bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
-    bar(x + 250,y + 0,x + 300 - 1,y + 55 - 1,RED);
-    bar(x + 0,y + 200,x + 300 - 1,y + 280 - 1,BLUE);
-    bar(x + 100,y + 245,x + 200 - 1,y + 275 - 1,TIANYILAN);
-    line(x+250,y+0,x+300,y+55,WHITE);
-    line(x+300,y+0,x+250,y+55,WHITE);
-    TextGB64(x + 30,y,50,WHITE,"选择颜色",0);
-    TextGB32(x + 110,y + 245,40,WHITE,"确定");
-    mouseStatus(&mouseOld);
-    mouseStoreBk(mouseOld.x,mouseOld.y);
-    while(1){
-        mouseStatus(&mouseNew);
-        if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
-            continue;
-        else{
-            mousePutBk(mouseOld.x, mouseOld.y);
-            mouseStoreBk(mouseNew.x, mouseNew.y);
-            mouseDraw(mouseNew);
-            if(mouseDown(x+250,y+0,x+300,y+55)){
-                break;
-            }
-            if(mouseDown(x + 100,y + 245,x + 200,y + 275)){
-                break;
             }
             mouseOld = mouseNew;
         }
@@ -1030,4 +1028,80 @@ void drawFreePhase(Image *image,u32 color){
         mouseOld = mouseNew;		
     }
     delay(100);
+}
+void welcomePhase()
+{
+    putUI("ui\\wel2.bmp",0,0,-1);
+    TextGB64(100,100,45,BLACK,"手机拍了好照片，",6);
+    TextGB64(100,150,45,BLACK,"却找不到好用的修图软件？",6);
+    TextGB64(100,250,45,BLACK,"习惯了",6);
+    TextASC64(240,250,40,BLACK,"DOS",6);
+    TextGB64(100,300,45,BLACK,"系统，不习惯更新的操作系统？",6);
+    TextGB64(100,500,40,BLACK,"现在，不用担心！",6);
+    delay(1000);
+    putUI("ui\\wel1.bmp",0,0,-1);
+    delay(1000);
+    TextGB64(300,400,45,BLACK,"按任意键进入",4);
+    getch();
+}
+u32 colorPhase(){
+    Mouse mouseOld = {0},mouseNew = {0};
+    Image bg;
+    int i,j,x,y,x1,y1,x2;
+    u32 colory = GRAY;
+    HSL hsl = {200.0,0.5,0.5};
+    int flag;
+    RGB res;
+    bg.x = 300,bg.y = 150,bg.height = 280 + 40,bg.width = 300 + 40; 
+    x = 300,y = 150;
+    strcpy(bg.cachePath,"temp\\bgpic.tmp");
+    saveImageCache(&bg);
+    bar(x + 0,y + 50,x + 300 - 1,y + 200 - 1,BLUE);
+    bar(x + 0,y + 0,x + 300 - 1,y + 55 - 1,TIANYILAN);
+    bar(x + 250,y + 0,x + 300 - 1,y + 55 - 1,RED);
+    bar(x + 0,y + 200,x + 300 - 1,y + 280 - 1,BLUE);
+    line(x+250,y+0,x+300,y+55,WHITE);
+    line(x+300,y+0,x+250,y+55,WHITE);
+    TextGB64(x + 30,y,50,WHITE,"选择颜色",0);
+    colorBoard(x + 10,y + 65);
+    colorBoardSide(x+150,y+65,x+75,y+170);
+    mouseStatus(&mouseOld);
+    mouseStoreBk(mouseOld.x,mouseOld.y);
+    while(1){
+        mouseStatus(&mouseNew);
+        if(mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
+            continue;
+        else{
+            mousePutBk(mouseOld.x, mouseOld.y);
+            mouseStoreBk(mouseNew.x, mouseNew.y);
+            mouseDraw(mouseNew);
+            if(mouseDown(x + 250,y + 0,x + 300,y + 55)){
+                break;
+            }
+            if(mouseDown(x + 10,y + 65,x + 140,y + 275)){
+                mouseStatus(&mouseNew);
+                x1=mouseNew.x,y1=mouseNew.y;
+                hsl = colorBoardSide(x+150,y+65,x1,y1);
+            }
+            if(mouseDown(x+150,y+65,x+290,y+115)){
+                x2=mouseNew.x-450;
+                hsl.l=0+x2*1.0/140;
+                colory = RGB2u32(HSL2RGB(hsl));
+                bar(x+150,y+175,x+200,y+220,colory);
+                bar(x+210,y+175,x+290,y+220,TIANYILAN);
+                TextGB32(x+210,y+175,40,WHITE,"确定");
+                TextGB32(x+150,y+120,35,BLACK,"当前颜色");
+                flag = 1;
+            }
+            if(mouseDown(x+210,y+175,x+290,y+220)){
+                if(flag){
+                    putImage(&bg,x,y);
+                    return colory;
+                }
+            }
+            mouseOld = mouseNew;
+        }
+    }
+    putImage(&bg,x,y);
+    return BLACK;
 }

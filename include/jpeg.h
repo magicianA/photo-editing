@@ -8,6 +8,6 @@
 void saveJPEG(int x,int y);
 double alpha(double x);
 void dct(double res[][8],double src[][8]);
-void quantization(double a[][8],int flag);
+void quantization(double a[][8],int flag,int dest[][8]);
 
 #endif
