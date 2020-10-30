@@ -1,12 +1,12 @@
-#include"phases.h"
+#include "phases.h"
 
 int main()
 {
 	setSVGA();
-	welcomePhase();
+	//welcomePhase();
 	//testPhase();
 	mainPhase();
-	goodbyePhase();
+	//goodbyePhase();
 	delay(200);
-    return 0;
+	return 0;
 }
