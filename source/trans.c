@@ -1,5 +1,11 @@
 #include "trans.h"
 
+/*********************************************
+FUNCTION: mirror
+DESCRIPTION: 镜像图片
+INPUT:image
+RETURN: void
+***********************************************/
 void mirror(Image *image)
 {
     u32 c1, c2;
@@ -17,6 +23,12 @@ void mirror(Image *image)
     }
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: cut
+DESCRIPTION: 切割图片
+INPUT:image,x1,x2,y1,y2,color
+RETURN: 一个布尔值，表示切割是否成功。
+***********************************************/
 int cut(Image *image, int x1, int x2, int y1, int y2, u32 color)
 {
     int x, y, width, height, i, j;
@@ -48,6 +60,12 @@ int cut(Image *image, int x1, int x2, int y1, int y2, u32 color)
     saveImageCache(image);
     return 1;
 }
+/*********************************************
+FUNCTION: mirror
+DESCRIPTION: 镜像图片
+INPUT:image cl(背景颜色)
+RETURN: void
+***********************************************/
 void spin(Image *image, u32 cl)
 {
     int i, j, x, y, width, height;
@@ -61,7 +79,11 @@ void spin(Image *image, u32 cl)
             putPixel(i, j, cl);
         }
     }
-    image->x = x + width / 2 - height / 2, image->y = y - width / 2 + height / 2;
+    
+    image->x = 432 - height / 2;
+    image->y = 317 - width / 2;
+
+    //image->x = x + width / 2 - height / 2, image->y = y - width / 2 + height / 2;
     image->width = height, image->height = width;
     fp = fopen(image->cachePath, "rb");
     for (j = 0; j < width; j++)
@@ -75,7 +97,12 @@ void spin(Image *image, u32 cl)
     fclose(fp);
     saveImageCache(image);
 }
-
+/*********************************************
+FUNCTION: zoom
+DESCRIPTION: 放缩图片
+INPUT:image scaleX scaleY
+RETURN: 布尔值，缩放是否成功
+***********************************************/
 int zoom(Image *image, double scaleX, double scaleY)
 {
     int i, j;
@@ -140,6 +167,13 @@ int zoom(Image *image, double scaleX, double scaleY)
     putImage(image, image->x, image->y);
     return 1;
 }
+
+/*********************************************
+FUNCTION: drawLine
+DESCRIPTION: 图片内划线
+INPUT:image x1 x2 y1 y2 color
+RETURN: 布尔值，画图是否成功
+***********************************************/
 int drawLine(Image *image, int x1, int x2, int y1, int y2, u32 color)
 {
     int x, y, width, height;
@@ -156,6 +190,12 @@ int drawLine(Image *image, int x1, int x2, int y1, int y2, u32 color)
     return 1;
 }
 
+/*********************************************
+FUNCTION: drawBarEmpty
+DESCRIPTION: 图片内画空心矩形
+INPUT:image x1 x2 y1 y2 color
+RETURN: 布尔值，画图是否成功
+***********************************************/
 int drawBarEmpty(Image *image, int x1, int x2, int y1, int y2, u32 color)
 {
     int x, y, width, height;
@@ -175,6 +215,12 @@ int drawBarEmpty(Image *image, int x1, int x2, int y1, int y2, u32 color)
     return 1;
 }
 
+/*********************************************
+FUNCTION: drawBarFilled
+DESCRIPTION: 图片内画实心矩形
+INPUT:image x1 x2 y1 y2 color
+RETURN: 布尔值，画图是否成功
+***********************************************/
 int drawBarFilled(Image *image, int x1, int x2, int y1, int y2, u32 color)
 {
     int x, y, width, height;
@@ -191,6 +237,12 @@ int drawBarFilled(Image *image, int x1, int x2, int y1, int y2, u32 color)
     return 1;
 }
 
+/*********************************************
+FUNCTION: drawTriangle
+DESCRIPTION: 图片内画空心三角形
+INPUT:image x1 x2 y1 y2 color
+RETURN: 布尔值，画图是否成功
+***********************************************/
 int drawTriangle(Image *image, int x1, int x2, int x3, int y1, int y2, int y3, u32 color)
 {
     int x, y, width, height;
@@ -209,6 +261,12 @@ int drawTriangle(Image *image, int x1, int x2, int x3, int y1, int y2, int y3, u
     return 1;
 }
 
+/*********************************************
+FUNCTION: drawFree
+DESCRIPTION: 图片内自由画笔
+INPUT:image color
+RETURN: void
+***********************************************/
 void drawFree(Image *image, u32 color)
 {
     Mouse mouseOld, mouseNew;
@@ -237,6 +295,12 @@ void drawFree(Image *image, u32 color)
     }
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: colorBorad
+DESCRIPTION: 画色彩版(H,S坐标)
+INPUT: x y
+RETURN: void
+***********************************************/
 void colorBoard(int x, int y)
 {
     int i, j;
@@ -257,7 +321,12 @@ void colorBoard(int x, int y)
         }
     }
 }
-
+/*********************************************
+FUNCTION: colorBoradSide
+DESCRIPTION: 画色彩版(给定h,s下l坐标)
+INPUT: x y x1(颜色对应的坐标) y2(颜色对应的坐标)
+RETURN: HSL
+***********************************************/
 HSL colorBoardSide(int x, int y, int x1, int y1)
 {
     int i, j, x2, y2;

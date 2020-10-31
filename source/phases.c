@@ -1,5 +1,11 @@
 #include "phases.h"
 
+/*********************************************
+FUNCTION: cutPhase
+DESCRIPTION: 切割阶段
+INPUT: image stack
+RETURN: void
+***********************************************/
 void cutPhase(Image *image, Stack *stack)
 {
     int flag = 0;
@@ -45,6 +51,12 @@ void cutPhase(Image *image, Stack *stack)
         }
     }
 }
+/*********************************************
+FUNCTION: linePhase
+DESCRIPTION: 划线阶段
+INPUT: image color stack
+RETURN: void
+***********************************************/
 void linePhase(Image *image, u32 color, Stack *stack)
 {
     int flag = 0;
@@ -90,6 +102,12 @@ void linePhase(Image *image, u32 color, Stack *stack)
         }
     }
 }
+/*********************************************
+FUNCTION: emptyBarPhase
+DESCRIPTION: 画空心矩形阶段
+INPUT: image color stack
+RETURN: void
+***********************************************/
 void emptyBarPhase(Image *image, u32 color, Stack *stack)
 {
     int flag = 0;
@@ -135,6 +153,12 @@ void emptyBarPhase(Image *image, u32 color, Stack *stack)
         }
     }
 }
+/*********************************************
+FUNCTION: filledBarPhase
+DESCRIPTION: 画实心矩形阶段
+INPUT: image color stack
+RETURN: void
+***********************************************/
 void filledBarPhase(Image *image, u32 color, Stack *stack)
 {
     int flag = 0;
@@ -181,7 +205,12 @@ void filledBarPhase(Image *image, u32 color, Stack *stack)
         }
     }
 }
-
+/*********************************************
+FUNCTION: trianglePhase
+DESCRIPTION: 画三角形阶段
+INPUT: image color stack
+RETURN: void
+***********************************************/
 void trianglePhase(Image *image, u32 color, Stack *stack)
 {
     int flag = 0;
@@ -234,13 +263,20 @@ void trianglePhase(Image *image, u32 color, Stack *stack)
         }
     }
 }
+/*********************************************
+FUNCTION: testPhase
+DESCRIPTION: 测试阶段
+INPUT: void
+RETURN: void
+***********************************************/
 void testPhase()
 {
     Image image = {0};
     Mouse mouseOld, mouseNew;
     bar(0, 0, SCR_WIDTH, SCR_HEIGHT, TIANYILAN);
     mouseReset();
-    readBMP(&image, "temp\\timg.bmp", 0, 0, 0);
+    BMPcache(&image,"temp\\timg.bmp");
+    //readBMP(&image, "temp\\timg.bmp", 0, 0, 0);
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x, mouseOld.y);
     bar(300, 300, 300 + 32, 300 + 32, PINK);
@@ -257,7 +293,10 @@ void testPhase()
             if (mouseDown(300, 300, 332, 332))
             {
                 mousePutBk(mouseNew.x, mouseNew.y);
-                blend(image.x, image.y, image.x + image.width - 1, image.y + image.height - 1, GRAY, 0.4);
+                previewFile(&image,0,0);
+                //putImage(&image,0,0);
+                getch();
+                TextGB32(0,0,10,BLACK,"你好");
                 getch();
                 break;
             }
@@ -265,6 +304,12 @@ void testPhase()
         }
     }
 }
+/*********************************************
+FUNCTION: msgPhase
+DESCRIPTION: 提示框阶段
+INPUT: x y s
+RETURN: void
+***********************************************/
 void msgPhase(int x, int y, char *s)
 {
     Mouse mouseOld, mouseNew;
@@ -300,6 +345,12 @@ void msgPhase(int x, int y, char *s)
     }
     putImage(&bg, x, y);
 }
+/*********************************************
+FUNCTION: fliterPhase
+DESCRIPTION: 滤镜阶段
+INPUT: image stack
+RETURN: void
+***********************************************/
 void fliterPhase(Image *image, Stack *stack)
 {
     Mouse mouseOld, mouseNew;
@@ -444,6 +495,12 @@ void fliterPhase(Image *image, Stack *stack)
     }
     putImage(&bg, x, y);
 }
+/*********************************************
+FUNCTION: adjustPhase
+DESCRIPTION: 调节阶段
+INPUT: image stack
+RETURN: void
+***********************************************/
 void adjustPhase(Image *image, Stack *stack)
 {
     Mouse mouseOld, mouseNew;
@@ -525,6 +582,12 @@ void adjustPhase(Image *image, Stack *stack)
     }
     putImage(&bg, x, y);
 }
+/*********************************************
+FUNCTION: mainPhase
+DESCRIPTION: 主阶段
+INPUT: void
+RETURN: void
+***********************************************/
 void mainPhase()
 {
     Image image = {0};
@@ -747,7 +810,7 @@ void mainPhase()
                         TextGB16(200, 571, 15, WHITE, "撤销");
                     break;         
                     case 22:
-                        TextGB16(200, 571, 15, WHITE, "图片列表");
+                        TextGB16(200, 571, 15, WHITE, "图片管理");
                     break;                      
                     default:
                         break;
@@ -1089,6 +1152,12 @@ void mainPhase()
         remove(image.cachePath);
     }
 }
+/*********************************************
+FUNCTION: openPhase
+DESCRIPTION: 打开阶段
+INPUT: image
+RETURN: void
+***********************************************/
 void openPhase(Image *image)
 {
     Mouse mouseOld, mouseNew;
@@ -1158,6 +1227,12 @@ void openPhase(Image *image)
     }
     putImage(&bg, x, y);
 }
+/*********************************************
+FUNCTION: goodbyePhase
+DESCRIPTION: 再见阶段
+INPUT: void
+RETURN: void
+***********************************************/
 void goodbyePhase()
 {
     putUI("ui\\gb.bmp", 0, 0, -1);
@@ -1166,6 +1241,12 @@ void goodbyePhase()
     TextASC128(300, 400, 70, WHITE, "GOODBYE", 5);
     delay(1000);
 }
+/*********************************************
+FUNCTION: inputPhase
+DESCRIPTION: 输入阶段
+INPUT: filename flag(1=接受全字符输入 0=只接受数字输入) dx dy
+RETURN: int
+***********************************************/
 int inputPhase(char *filename, int flag, int dx, int dy)
 {
     unsigned int key;
@@ -1209,7 +1290,12 @@ int inputPhase(char *filename, int flag, int dx, int dy)
     }
     return 0;
 }
-
+/*********************************************
+FUNCTION: savePhase
+DESCRIPTION: 保存阶段
+INPUT: image
+RETURN: void
+***********************************************/
 void savePhase(Image *image)
 {
     Mouse mouseOld, mouseNew;
@@ -1281,7 +1367,12 @@ void savePhase(Image *image)
     }
     putImage(&bg, x, y);
 }
-
+/*********************************************
+FUNCTION: zoomPhase
+DESCRIPTION: 放缩阶段
+INPUT: image stack
+RETURN: void
+***********************************************/
 void zoomPhase(Image *image, Stack *stack)
 {
     Mouse mouseOld = {0}, mouseNew;
@@ -1368,7 +1459,12 @@ void zoomPhase(Image *image, Stack *stack)
     }
     putImage(&bg, x, y);
 }
-
+/*********************************************
+FUNCTION: newPhase
+DESCRIPTION: 新建阶段
+INPUT: image
+RETURN: void
+***********************************************/
 void newPhase(Image *image)
 {
     Mouse mouseOld = {0}, mouseNew = {0};
@@ -1463,7 +1559,12 @@ void newPhase(Image *image)
     }
     putImage(&bg, x, y);
 }
-
+/*********************************************
+FUNCTION: drawFreePhase
+DESCRIPTION: 自由画笔阶段
+INPUT: image color stack
+RETURN: void
+***********************************************/
 void drawFreePhase(Image *image, u32 color, Stack *stack)
 {
     Mouse mouseOld, mouseNew;
@@ -1500,6 +1601,12 @@ void drawFreePhase(Image *image, u32 color, Stack *stack)
     }
     delay(100);
 }
+/*********************************************
+FUNCTION: welcomePhase
+DESCRIPTION: 欢迎阶段
+INPUT: void
+RETURN: void
+***********************************************/
 void welcomePhase()
 {
     delay(1400);
@@ -1516,6 +1623,12 @@ void welcomePhase()
     TextGB64(300, 400, 45, BLACK, "按任意键进入", 4);
     getch();
 }
+/*********************************************
+FUNCTION: colorPhase
+DESCRIPTION: 选择颜色阶段
+INPUT: void
+RETURN: u32
+***********************************************/
 u32 colorPhase()
 {
     Mouse mouseOld = {0}, mouseNew = {0};
@@ -1585,6 +1698,12 @@ u32 colorPhase()
     putImage(&bg, x, y);
     return BLACK;
 }
+/*********************************************
+FUNCTION: copyleftPhase
+DESCRIPTION: 关于阶段
+INPUT: void
+RETURN: void
+***********************************************/
 void copyleftPhase()
 {
     Mouse mouseOld = {0}, mouseNew = {0};
@@ -1636,6 +1755,12 @@ void copyleftPhase()
     putImage(&bg, x, y);
 }
 
+/*********************************************
+FUNCTION: fileListPhase
+DESCRIPTION: 图片管理阶段
+INPUT: image
+RETURN: void
+***********************************************/
 void fileListPhase(Image *image)
 {
     Mouse mouseOld, mouseNew;
@@ -1645,8 +1770,9 @@ void fileListPhase(Image *image)
     int filecount;
     int i, j, x, y;
     char s[20];
-    bg.x = 300, bg.y = 150, bg.height = 250 + 20, bg.width = 300 + 20;
-    x = 300, y = 150;
+    bg.x = 200, bg.y = 100, bg.height = 350 + 20, bg.width = 450 + 20;
+    x = 200, y = 100;
+    
     filecount = fileCount();
     for (i = 0; i < 20; i++)
         strcpy(fileNames[i], "empty");
@@ -1654,17 +1780,21 @@ void fileListPhase(Image *image)
     strcpy(bg.cachePath, "temp\\fbgpic.tmp");
     strcpy(s, "temp\\");
     saveImageCache(&bg);
-    bar(x + 0, y + 50, x + 300 - 1, y + 200 - 1, BLUE);
-    bar(x + 0, y + 0, x + 300 - 1, y + 55 - 1, TIANYILAN);
-    bar(x + 250, y + 0, x + 300 - 1, y + 55 - 1, RED);
-    bar(x + 0, y + 200, x + 300 - 1, y + 250 - 1, BLUE);
-    bar(x + 100, y + 215, x + 220 - 1, y + 245 - 1, TIANYILAN);
+    
+    bar(x + 0, y + 50, x + 450 - 1, y + 350 - 1, BLUE);
+    bar(x + 0, y + 0, x + 450 - 1, y + 55 - 1, TIANYILAN);
+    bar(x + 400, y + 0, x + 450 - 1, y + 55 - 1, RED);
+    bar(x + 230, y + 315, x + 340 - 1, y + 345 - 1, TIANYILAN);
+    bar(x + 230,y + 270,x + 340 - 1,y + 300 - 1,TIANYILAN); //add
+    bar(x + 10,y + 190,x + 210,y + 340,WHITE);
     putUI("ui\\up.bmp", x + 230, y + 60, -1);
     putUI("ui\\down.bmp", x + 230, y + 110, -1);
-    line(x + 250, y + 0, x + 300, y + 55, WHITE);
-    line(x + 300, y + 0, x + 250, y + 55, WHITE);
-    TextGB64(x + 30, y, 50, WHITE, "选择文件", 0);
-    TextGB32(x + 110, y + 215, 40, WHITE, "确定");
+    line(x + 400, y + 0, x + 450, y + 55, WHITE);
+    line(x + 450, y + 0, x + 400, y + 55, WHITE);
+    TextGB64(x + 30, y, 50, WHITE, "照片管理", 0);
+    
+    TextGB32(x + 240, y + 315, 40, WHITE, "打开");
+    TextGB32(x + 240,y + 270,40,WHITE,"预览");
     bar(x + 10, y + 70, x + 220, y + 100, PINK);
     TextASC24(x + 10, y + 70, 14, WHITE, fileNames[0]);
 
@@ -1686,7 +1816,7 @@ void fileListPhase(Image *image)
             mousePutBk(mouseOld.x, mouseOld.y);
             mouseStoreBk(mouseNew.x, mouseNew.y);
             mouseDraw(mouseNew);
-            if (mouseDown(x + 250, y + 0, x + 300, y + 55))
+            if (mouseDown(x + 400, y + 0, x + 450, y + 55))
             {
                 break;
             }
@@ -1742,7 +1872,7 @@ void fileListPhase(Image *image)
                     curfile = -1;
                 }
             }
-            if (mouseDown(x + 100, y + 215, x + 220, y + 245))
+            if (mouseDown(x + 230, y + 315, x + 340, y + 345))
             {
                 if (curfile != -1)
                 {
@@ -1768,8 +1898,27 @@ void fileListPhase(Image *image)
                     mouseStoreBk(mouseNew.x, mouseNew.y);
                 }
             }
+            if(mouseDown(x + 230,y + 270,x + 340,y + 300)){
+                if(curfile != -1){
+                    strcat(s, fileNames[curfile]);
+                    lowerCase(s);
+                    bar(x + 10,y + 190,x + 210,y + 340,WHITE);
+                    mousePutBk(mouseNew.x, mouseNew.y);
+                    previewPhase(x + 10,y + 190,s);
+                    mouseStoreBk(mouseNew.x, mouseNew.y);
+                    
+                    strcpy(s,"temp\\");
+                }
+            }
             mouseOld = mouseNew;
         }
     }
     putImage(&bg, x, y);
+}
+
+void previewPhase(int x,int y,char *path)
+{
+    Image image;
+    BMPcache(&image,path);
+    previewFile(&image,x,y);
 }

@@ -18,5 +18,6 @@ typedef struct
 void stackInit(Stack *stack);
 void stackPush(Stack *stack,Image *image);
 int stackPop(Stack *stack,Image *image);
+char* lowerCase(char *s);
 
 #endif

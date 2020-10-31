@@ -10,7 +10,6 @@
 #include "trans.h"
 #include "text.h"
 #include "image.h"
-#include "jpeg.h"
 #include "coll.h"
 #include "files.h"
 
@@ -41,5 +40,6 @@ void emptyBarPhase(Image *image, u32 color,Stack *stack);
 void filledBarPhase(Image *image, u32 color,Stack *stack);
 void trianglePhase(Image *image, u32 color,Stack *stack);
 void fileListPhase(Image *image);
+void previewPhase(int x,int y,char *path);
 
 #endif

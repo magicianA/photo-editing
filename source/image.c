@@ -1,19 +1,42 @@
 #include "image.h"
 #define _sq(x) ((x) * (x))
 
-//source:tweetable-mathematical-art
+/*********************************************
+FUNCTION: red_fn 
+DESCRIPTION: 七彩图片r坐标
+INPUT: i j
+RETURN: char
+***********************************************/
 char red_fn(long i, long j)
 {
     return (char)(_sq(cos(atan2(j - 300, i - 400) / 2)) * 255);
 }
+/*********************************************
+FUNCTION: green_fn 
+DESCRIPTION: 七彩图片g坐标
+INPUT: i j
+RETURN: char
+***********************************************/
 char green_fn(long i, long j)
 {
     return (char)(_sq(cos(atan2(j - 300, i - 400) / 2 - 2 * acos(-1) / 3)) * 255);
 }
+/*********************************************
+FUNCTION: blue_fn 
+DESCRIPTION: 七彩图片b坐标
+INPUT: i j
+RETURN: char
+***********************************************/
 char blue_fn(long i, long j)
 {
     return (char)(_sq(cos(atan2(j - 300, i - 400) / 2 + 2 * acos(-1) / 3)) * 255);
 }
+/*********************************************
+FUNCTION: showGoodbyeImage
+DESCRIPTION: 展示七彩图片
+INPUT: void
+RETURN: void
+***********************************************/
 void showGoodbyeImage()
 {
     int i, j;
@@ -25,7 +48,12 @@ void showGoodbyeImage()
         }
     }
 }
-
+/*********************************************
+FUNCTION: image2ImageData
+DESCRIPTION: 将Image结构体转换为ImageData结构体
+INPUT: image
+RETURN:  ImageData
+***********************************************/
 ImageData image2ImageData(Image *image){
     ImageData t;
     t.x = image->x;
@@ -34,6 +62,12 @@ ImageData image2ImageData(Image *image){
     t.height = image->height;
     return t;
 }
+/*********************************************
+FUNCTION: readBMP
+DESCRIPTION: 读取BMP
+INPUT: image path x y flag(布尔值，是否自适应)
+RETURN:  int 1:成功读取 0:图片类型不符 -1 其他错误
+***********************************************/
 int readBMP(Image *image, const char *path, int x, int y, int flag)
 {
     int i, j;
@@ -112,7 +146,12 @@ int readBMP(Image *image, const char *path, int x, int y, int flag)
     }
     return 1;
 }
-
+/*********************************************
+FUNCTION: saveBMP
+DESCRIPTION: 保存BMP
+INPUT: x1 y1 x2 y2 path
+RETURN: 一个布尔值 是否成功保存
+***********************************************/
 int saveBMP(int x1, int y1, int x2, int y2, char *path)
 {
     int i, j;
@@ -184,6 +223,12 @@ int saveBMP(int x1, int y1, int x2, int y2, char *path)
     return 1;
 }
 
+/*********************************************
+FUNCTION: saveImageCache
+DESCRIPTION: 保存图片缓存
+INPUT: image
+RETURN: 一个布尔值 是否成功保存
+***********************************************/
 int saveImageCache(Image const *image)
 {
     FILE *fp;
@@ -202,6 +247,12 @@ int saveImageCache(Image const *image)
     fclose(fp);
     return 1;
 }
+/*********************************************
+FUNCTION: putImage
+DESCRIPTION: 从图片缓存中读取图片并打印到屏幕上
+INPUT: image x y
+RETURN: 一个布尔值 是否成功读取
+***********************************************/
 int putImage(Image const *image, int x, int y)
 {
     FILE *fp;
@@ -224,7 +275,12 @@ int putImage(Image const *image, int x, int y)
     fclose(fp);
     return 1;
 }
-
+/*********************************************
+FUNCTION: addBrightness
+DESCRIPTION: 增加图片亮度
+INPUT: image delta
+RETURN: void
+***********************************************/
 void addBrightness(Image *image, double delta)
 {
     int x, y, i, j;
@@ -246,6 +302,12 @@ void addBrightness(Image *image, double delta)
     }
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: addSaturation
+DESCRIPTION: 增加图片饱和度
+INPUT: image delta
+RETURN: void
+***********************************************/
 void addSaturation(Image *image, double delta)
 {
     int x, y, i, j;
@@ -267,20 +329,44 @@ void addSaturation(Image *image, double delta)
     }
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: RGB2u32
+DESCRIPTION: 将RGB类型结构体转换为u32类型
+INPUT: RGB
+RETURN: u32
+***********************************************/
 u32 RGB2u32(const RGB x)
 {
     return ((u32)x.r << 16) | ((u32)x.g << 8) | ((u32)x.b);
 }
+/*********************************************
+FUNCTION: rgb2u32
+DESCRIPTION: 将单独的rgb分量转换为u32类型
+INPUT: r g b
+RETURN: u32
+***********************************************/
 u32 rgb2u32(byte r, byte g, byte b)
 {
     return ((u32)r << 16) | ((u32)g << 8) | ((u32)b);
 }
+/*********************************************
+FUNCTION: getRGB
+DESCRIPTION: 将单独的rgb分量转换为RGB结构体类型
+INPUT: r g b
+RETURN: RGB
+***********************************************/
 RGB getRGB(byte r, byte g, byte b)
 {
     RGB t;
     t.r = r, t.b = b, t.g = g;
     return t;
 }
+/*********************************************
+FUNCTION: RGB2HSL
+DESCRIPTION: 将RGB坐标下的颜色转换为HSL坐标下的颜色
+INPUT: RGB
+RETURN: HSL
+***********************************************/
 HSL RGB2HSL(const RGB x)
 {
     HSL t;
@@ -311,6 +397,12 @@ HSL RGB2HSL(const RGB x)
 
     return t;
 }
+/*********************************************
+FUNCTION: HSL2RGB
+DESCRIPTION: 将HSL坐标下的颜色转换为BGB坐标下的颜色
+INPUT: HSL
+RETURN: RGB
+***********************************************/
 RGB HSL2RGB(HSL hsl)
 {
     RGB res;
@@ -366,6 +458,12 @@ RGB HSL2RGB(HSL hsl)
         res.b = 255;
     return res;
 }
+/*********************************************
+FUNCTION: getPixelFromCache
+DESCRIPTION: 从缓存中读取颜色
+INPUT: fp x y height
+RETURN: u32
+***********************************************/
 u32 getPixelFromCache(FILE *fp, long x, long y, int height)
 {
     u32 color;
@@ -373,6 +471,83 @@ u32 getPixelFromCache(FILE *fp, long x, long y, int height)
     fread(&color, 4, 1, fp);
     return color;
 }
+/*********************************************
+FUNCTION: BMPcache
+DESCRIPTION: 将bmp读取在缓存中
+INPUT: image path
+RETURN: 布尔值，是否成功
+***********************************************/
+int BMPcache(Image *image,char *path)
+{
+    int i, j;
+    BGR *buffer;
+    char temp[25];
+    u32 color24;
+    u32 linebytes;
+    FILE *fp = fopen(path, "rb");
+    FILE *ft;
+    BITMAPFILEHEADER bmphead;
+    BITMAPINFOHEADER bmpinfo;
+
+    strcpy(temp, path);
+    strcpy(strstr(temp, ".bmp"), ".tmp");
+    strcpy(strstr(temp, ".BMP"), ".tmp");
+    if (fp)
+    {
+        fread(&bmphead, sizeof(bmphead), 1, fp);
+        fread(&bmpinfo, sizeof(bmpinfo), 1, fp);
+        if (bmphead.bfType != 0x4d42 || bmpinfo.biBitCount != 24u || bmpinfo.biCompression != 0ul || bmpinfo.biWidth > SCR_WIDTH ||
+            bmpinfo.biHeight > SCR_HEIGHT)
+        {
+            fclose(fp);
+            return 0;
+        }
+        linebytes = (3 * bmpinfo.biWidth) % 4;
+        if (!linebytes)
+            linebytes = 3 * bmpinfo.biWidth;
+        else
+            linebytes = 3 * bmpinfo.biWidth + 4 - linebytes;
+        fseek(fp, 54L, 0);
+        if ((ft = fopen(temp, "wb+")) == 0)
+            return 0;
+        fseek(ft,0,SEEK_SET);
+        for(i = 0;i < bmpinfo.biWidth;i++){
+            for(j = 0;j < bmpinfo.biHeight;j++){
+                fwrite(BLACK, 4, 1, ft);
+            }
+        }
+        for (i = bmpinfo.biHeight - 1; i >= 0; i--)
+        {
+            fread(buffer, linebytes, 1, fp);
+            for (j = 0; j < bmpinfo.biWidth; j++)
+            {
+                color24 = ((u32)buffer[j].r) << 16 | ((u32)buffer[j].g) << 8 | ((u32)buffer[j].b);
+                fseek(ft,(j * bmpinfo.biHeight + i)* 4,SEEK_SET);
+                fwrite(&color24,4,1,ft);
+            }
+        }
+        free(buffer);
+        image->width = bmpinfo.biWidth;
+        image->height = bmpinfo.biHeight;
+        strcpy(image->cachePath,temp);
+        //fclose(fp);
+        //fclose(ft);
+    }
+    else
+    {
+        fclose(fp);
+        return -1;
+    }
+    fclose(fp);
+    fclose(ft);
+    return 1;
+}
+/*********************************************
+FUNCTION: convolute3
+DESCRIPTION: 图片卷积(3*3卷积核)
+INPUT: image core
+RETURN: 一个布尔值，卷积是否成功
+***********************************************/
 int convolute3(Image *image, double core[][3])
 {
     FILE *fp;
@@ -423,6 +598,12 @@ int convolute3(Image *image, double core[][3])
     fclose(fp);
     return 1;
 }
+/*********************************************
+FUNCTION: convolute5
+DESCRIPTION: 图片卷积(5*5卷积核)
+INPUT: image core
+RETURN: 一个布尔值，卷积是否成功
+***********************************************/
 int convolute5(Image *image, double core[][5])
 {
     FILE *fp;
@@ -471,6 +652,12 @@ int convolute5(Image *image, double core[][5])
     fclose(fp);
     return 1;
 }
+/*********************************************
+FUNCTION: sharpen
+DESCRIPTION: 图片锐化
+INPUT: image
+RETURN: void
+***********************************************/
 void sharpen(Image *image)
 {
     double core[3][3] = {0};
@@ -479,37 +666,72 @@ void sharpen(Image *image)
     convolute3(image, core);
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: blur
+DESCRIPTION: 图片模糊
+INPUT: image
+RETURN: void
+***********************************************/
 void blur(Image *image)
 {
     double core[3][3] = {1 / 16.0, 2 / 16.0, 1 / 16.0, 2 / 16.0, 4/ 16.0, 2 / 16.0, 1 / 16.0, 2 / 16.0, 1 / 16.0};
     convolute3(image, core);
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: movingBlur
+DESCRIPTION: 图片运动模糊
+INPUT: image
+RETURN: void
+***********************************************/
 void movingBlur(Image *image)
 {
     double core[5][5] = {{0.2, 0, 0, 0, 0}, {0, 0.2, 0, 0, 0}, {0, 0, 0.2, 0, 0}, {0, 0, 0, 0.2, 0}, {0, 0, 0, 0, 0.2}};
     convolute5(image, core);
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: unsharpen
+DESCRIPTION: 图片去模糊
+INPUT: image
+RETURN: void
+***********************************************/
 void unsharpen(Image *image)
 {
     double core[5][5] = {{-1 / 256.0, -4 / 256.0, -6 / 256.0, -4 / 256.0, -1 / 256.0}, {-4 / 256.0, -16 / 256.0, -24 / 256.0, -16 / 256.0, -4 / 256.0}, {-6 / 256.0, -24 / 256.0, 476 / 256.0, -24 / 256.0, -6 / 256.0}, {-4 / 256.0, -16 / 256.0, -24 / 256.0, -16 / 256.0, -4 / 256.0}, {-1 / 256.0, -4 / 256.0, -6 / 256.0, -4 / 256.0, -1 / 256.0}};
     convolute5(image, core);
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: laplace
+DESCRIPTION: 边缘检测(laplace 算子)
+INPUT: image
+RETURN: void
+***********************************************/
 void laplace(Image *image)
 {
     double core[3][3] = {-1,-1,-1,-1,8,-1,-1,-1,-1};
     convolute3(image,core);
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: curve
+DESCRIPTION: 图片浮雕
+INPUT: image
+RETURN: void
+***********************************************/
 void curve(Image *image)
 {
     double core[3][3] = {{-6, -3, 0}, {-3, 1, 3}, {0, 3, 6}};
     convolute3(image, core);
     saveImageCache(image);
 }
-
+/*********************************************
+FUNCTION: putUI
+DESCRIPTION: 将UI图片显示到屏幕上
+INPUT: path x y bgcolor(=-1表示背景透明)
+RETURN: void
+***********************************************/
 int putUI(const char *path, int x, int y, u32 bgcolor)
 {
     int i, j;
@@ -565,7 +787,12 @@ int putUI(const char *path, int x, int y, u32 bgcolor)
     }
     return 1;
 }
-
+/*********************************************
+FUNCTION: gray
+DESCRIPTION: 灰度
+INPUT: image
+RETURN: void
+***********************************************/
 void gray(Image *image)
 {
     int i, j, t;
@@ -588,7 +815,12 @@ void gray(Image *image)
     }
     saveImageCache(image);
 }
-
+/*********************************************
+FUNCTION: filtMatrix
+DESCRIPTION: 颜色(列向量)左乘一矩阵
+INPUT: image a
+RETURN: void
+***********************************************/
 void filtMatrix(Image *image, double a[][3])
 {
     int i, j;
@@ -619,20 +851,35 @@ void filtMatrix(Image *image, double a[][3])
         }
     }
 }
-
+/*********************************************
+FUNCTION: old
+DESCRIPTION: 复古滤镜
+INPUT: image
+RETURN: void
+***********************************************/
 void old(Image *image)
 {
     double b[][3] = {{0.393, 0.769, 0.189}, {0.349, 0.686, 0.168}, {0.272, 0.534, 0.131}};
     filtMatrix(image, b);
     saveImageCache(image);
 }
-
-/*void frozen(Image *image){
+/*********************************************
+FUNCTION: frozen
+DESCRIPTION: 冰冻滤镜
+INPUT: image
+RETURN: void
+***********************************************/
+void frozen(Image *image){
     double b[][3]={{1.5,-1.5,-1.5},{-1.5,1.5,-1.5},{-1.5,-1.5,1.5}};
     filtMatrix(image,b);
     saveImageCache(image);
-}*/
-
+}
+/*********************************************
+FUNCTION: reverse
+DESCRIPTION: 反色滤镜
+INPUT: image
+RETURN: void
+***********************************************/
 void reverse(Image *image)
 {
     int i, j;
@@ -655,6 +902,12 @@ void reverse(Image *image)
     }
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: closeImage
+DESCRIPTION: 关闭图片
+INPUT: image
+RETURN: void
+***********************************************/
 void closeImage(Image *image)
 {
     int i, j;
@@ -672,7 +925,12 @@ void closeImage(Image *image)
     image->x = image->y = image->width = image->height = 0;
     strcpy(image->cachePath, "");
 }
-
+/*********************************************
+FUNCTION: melt
+DESCRIPTION: 熔融滤镜
+INPUT: image
+RETURN: void
+***********************************************/
 void melt(Image *image)
 {
     int i, j;
@@ -705,7 +963,12 @@ void melt(Image *image)
     }
     saveImageCache(image);
 }
-
+/*********************************************
+FUNCTION: cartoon
+DESCRIPTION: 连环画滤镜
+INPUT: image
+RETURN: void
+***********************************************/
 void cartoon(Image *image)
 {
     int i, j;
@@ -736,7 +999,12 @@ void cartoon(Image *image)
     }
     saveImageCache(image);
 }
-
+/*********************************************
+FUNCTION: extreme
+DESCRIPTION: 黑白滤镜
+INPUT: image
+RETURN: void
+***********************************************/
 void extreme(Image *image)
 {
     int i, j;
@@ -768,6 +1036,12 @@ void extreme(Image *image)
     }
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: singleRed
+DESCRIPTION: 猩红滤镜
+INPUT: image
+RETURN: void
+***********************************************/
 void singleRed(Image *image)
 {
     int i, j;
@@ -788,7 +1062,12 @@ void singleRed(Image *image)
     }
     saveImageCache(image);
 }
-
+/*********************************************
+FUNCTION: singleGreen
+DESCRIPTION: 翠绿滤镜
+INPUT: image
+RETURN: void
+***********************************************/
 void singleGreen(Image *image)
 {
     int i, j;
@@ -810,7 +1089,12 @@ void singleGreen(Image *image)
     }
     saveImageCache(image);
 }
-
+/*********************************************
+FUNCTION: singleBlue
+DESCRIPTION: 蔚蓝滤镜
+INPUT: image
+RETURN: void
+***********************************************/
 void singleBlue(Image *image)
 {
     int i, j;
@@ -831,7 +1115,12 @@ void singleBlue(Image *image)
     }
     saveImageCache(image);
 }
-
+/*********************************************
+FUNCTION: blend
+DESCRIPTION: 将图片与某种颜色按一定比例混合
+INPUT: image
+RETURN: void
+***********************************************/
 void blend(int x1,int y1,int x2,int y2,u32 color2,double alpha)
 {
     int i,j;
@@ -855,6 +1144,12 @@ void blend(int x1,int y1,int x2,int y2,u32 color2,double alpha)
         }   
     }
 }
+/*********************************************
+FUNCTION: girl
+DESCRIPTION: 少女滤镜
+INPUT: image
+RETURN: void
+***********************************************/
 void girl(Image *image)
 {
     int x1,y1;
