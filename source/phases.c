@@ -45,6 +45,7 @@ void cutPhase(Image *image, Stack *stack)
                     flag = 1;
                     bar(200, 571, 500, 600, GRAY);
                     TextGB16(200, 571, 15, WHITE, "请选择点2");
+                    delay(200);
                 }
             }
             mouseOld = mouseNew;
@@ -96,6 +97,7 @@ void linePhase(Image *image, u32 color, Stack *stack)
                     flag = 1;
                     bar(200, 571, 500, 600, GRAY);
                     TextGB16(200, 571, 15, WHITE, "请选择点2");
+                    delay(200);
                 }
             }
             mouseOld = mouseNew;
@@ -147,6 +149,7 @@ void emptyBarPhase(Image *image, u32 color, Stack *stack)
                     flag = 1;
                     bar(200, 571, 500, 600, GRAY);
                     TextGB16(200, 571, 15, WHITE, "请选择点2");
+                    delay(200);
                 }
             }
             mouseOld = mouseNew;
@@ -199,6 +202,7 @@ void filledBarPhase(Image *image, u32 color, Stack *stack)
                     flag = 1;
                     bar(200, 571, 500, 600, GRAY);
                     TextGB16(200, 571, 15, WHITE, "请选择点2");
+                    delay(200);
                 }
             }
             mouseOld = mouseNew;
@@ -250,6 +254,7 @@ void trianglePhase(Image *image, u32 color, Stack *stack)
                     flag++;
                     bar(200, 571, 500, 600, GRAY);
                     TextGB16(200, 571, 15, WHITE, "请选择点3");
+                    delay(200);
                 }
                 else
                 {
@@ -257,6 +262,7 @@ void trianglePhase(Image *image, u32 color, Stack *stack)
                     flag++;
                     bar(200, 571, 500, 600, GRAY);
                     TextGB16(200, 571, 15, WHITE, "请选择点2");
+                    delay(200);
                 }
             }
             mouseOld = mouseNew;
@@ -356,9 +362,9 @@ void fliterPhase(Image *image, Stack *stack)
     Mouse mouseOld, mouseNew;
     Image bg;
     char fliterNames[20][20];
-    void (*filterFunc[20])(Image *) = {&old, &reverse, &gray, &sharpen, &blur, &curve, &movingBlur, &unsharpen, &melt, &cartoon, &extreme, &singleRed, &singleGreen, &singleBlue, &laplace,&girl};
+    void (*filterFunc[20])(Image *) = {&old, &reverse, &gray, &sharpen, &blur, &curve, &movingBlur, &unsharpen, &melt, &cartoon, &extreme, &singleRed, &singleGreen, &singleBlue, &laplace,&girl,&glass,&fantasy};
     int curfilter = -1, curPage = 0;
-    int filtercount = 16;
+    int filtercount = 18;
     int i, j, x, y;
     char s[10];
     bg.x = 300, bg.y = 150, bg.height = 250 + 20, bg.width = 300 + 20;
@@ -379,8 +385,8 @@ void fliterPhase(Image *image, Stack *stack)
     strcpy(fliterNames[13], "蔚蓝");
     strcpy(fliterNames[14], "边缘检测");
     strcpy(fliterNames[15],"少女");
-    strcpy(fliterNames[16],"空");
-    strcpy(fliterNames[17],"空");
+    strcpy(fliterNames[16],"毛玻璃");
+    strcpy(fliterNames[17],"幻想");
     strcpy(bg.cachePath, "temp\\bgpic.tmp");
     saveImageCache(&bg);
     bar(x + 0, y + 50, x + 300 - 1, y + 200 - 1, BLUE);
@@ -435,7 +441,7 @@ void fliterPhase(Image *image, Stack *stack)
             }
             if (mouseDown(x + 230, y + 110, x + 270, y + 150))
             {
-                if (curPage < filtercount / 3)
+                if (curPage < (filtercount - 1) / 3)
                 {
                     curPage++;
                     bar(x + 10, y + 70, x + 220, y + 100, PINK);
@@ -1765,6 +1771,7 @@ void fileListPhase(Image *image)
 {
     Mouse mouseOld, mouseNew;
     Image bg;
+    struct ffblk dir;
     char fileNames[20][20];
     int curfile = -1, curPage = 0;
     int filecount;
@@ -1784,8 +1791,10 @@ void fileListPhase(Image *image)
     bar(x + 0, y + 50, x + 450 - 1, y + 350 - 1, BLUE);
     bar(x + 0, y + 0, x + 450 - 1, y + 55 - 1, TIANYILAN);
     bar(x + 400, y + 0, x + 450 - 1, y + 55 - 1, RED);
+
     bar(x + 230, y + 315, x + 340 - 1, y + 345 - 1, TIANYILAN);
-    bar(x + 230,y + 270,x + 340 - 1,y + 300 - 1,TIANYILAN); //add
+    bar(x + 230,y + 270,x + 340 - 1,y + 300 - 1,TIANYILAN);
+    bar(x + 350,y + 270,x + 430 - 1,y + 345 - 1,RED);
     bar(x + 10,y + 190,x + 210,y + 340,WHITE);
     putUI("ui\\up.bmp", x + 230, y + 60, -1);
     putUI("ui\\down.bmp", x + 230, y + 110, -1);
@@ -1795,6 +1804,7 @@ void fileListPhase(Image *image)
     
     TextGB32(x + 240, y + 315, 40, WHITE, "打开");
     TextGB32(x + 240,y + 270,40,WHITE,"预览");
+    TextGB32(x + 350,y + 285,40,WHITE,"删除");
     bar(x + 10, y + 70, x + 220, y + 100, PINK);
     TextASC24(x + 10, y + 70, 14, WHITE, fileNames[0]);
 
@@ -1836,7 +1846,7 @@ void fileListPhase(Image *image)
             }
             if (mouseDown(x + 230, y + 110, x + 270, y + 150))
             {
-                if (curPage < filecount / 3)
+                if (curPage < (filecount - 1) / 3)
                 {
                     curPage++;
                     bar(x + 10, y + 70, x + 220, y + 100, PINK);
@@ -1855,6 +1865,10 @@ void fileListPhase(Image *image)
                 {
                     curfile = -1;
                 }
+                if(curfile != -1){
+                    findFile(curfile,&dir);
+                    fileInfoShow(dir,x + 300,y + 80);
+                }
             }
             if (mouseDown(x + 10, y + 110, x + 220, y + 140))
             {
@@ -1863,6 +1877,10 @@ void fileListPhase(Image *image)
                 {
                     curfile = -1;
                 }
+                if(curfile != -1){
+                    findFile(curfile,&dir);
+                    fileInfoShow(dir,x + 300,y + 80);
+                }
             }
             if (mouseDown(x + 10, y + 150, x + 220, y + 180))
             {
@@ -1870,6 +1888,10 @@ void fileListPhase(Image *image)
                 if (curfile >= filecount)
                 {
                     curfile = -1;
+                }
+                if(curfile != -1){
+                    findFile(curfile,&dir);
+                    fileInfoShow(dir,x + 300,y + 80);
                 }
             }
             if (mouseDown(x + 230, y + 315, x + 340, y + 345))
@@ -1909,13 +1931,37 @@ void fileListPhase(Image *image)
                     
                     strcpy(s,"temp\\");
                 }
+                else{
+                    mousePutBk(mouseNew.x, mouseNew.y);
+                    msgPhase(0, 0, "请选择文件");
+                    mouseStoreBk(mouseNew.x, mouseNew.y);
+                }
+            }
+            if(mouseDown(x + 350,y + 270,x + 430 - 1,y + 345 - 1)){
+                if(curfile != -1){
+                    strcat(s, fileNames[curfile]);
+                    lowerCase(s);
+                    remove(s);
+                    strcpy(s,"temp\\");
+                    break;
+                }
+                else{
+                    mousePutBk(mouseNew.x, mouseNew.y);
+                    msgPhase(0, 0, "请选择文件");
+                    mouseStoreBk(mouseNew.x, mouseNew.y);
+                }
             }
             mouseOld = mouseNew;
         }
     }
     putImage(&bg, x, y);
 }
-
+/*********************************************
+FUNCTION: previewPhase
+DESCRIPTION: 预览图阶段
+INPUT: x y path
+RETURN: void
+***********************************************/
 void previewPhase(int x,int y,char *path)
 {
     Image image;

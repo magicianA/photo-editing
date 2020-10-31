@@ -1161,3 +1161,54 @@ void girl(Image *image)
     blend(x1,y1,x2,y2,PINK,0.7);
     saveImageCache(image);
 }
+/*********************************************
+FUNCTION: glass
+DESCRIPTION: 毛玻璃滤镜
+INPUT: image
+RETURN: void
+***********************************************/
+void glass(Image *image)
+{
+    int i,j;
+    int x,y,width,height;
+    int r;
+    u32 color;
+    int ax[]={-1,0,1,-1,1,-1,0,1};
+    int ay[]={-1,-1,-1,0,0,1,1,1};
+    FILE *fp;
+    fp = fopen(image ->cachePath,"wb");
+    x = image->x, y = image->y, width = image->width, height = image->height;
+    for(i = x;i < x + width;i++){
+        for(j = y;j < y + height;j++){
+            r = rand() % 8;
+            if(i > x&&i < x + width - 1&&j > y&&j < y + height - 1){
+                color = getPixel(i + ax[r],j + ay[r]);
+                fwrite(&color, 4, 1, fp);
+            }
+            else{
+                color = getPixel(i,j);
+                fwrite(&color, 4, 1, fp);
+            }
+        }
+    }
+    fclose(fp);
+    putImage(image, x, y);
+    saveImageCache(image);
+} 
+/*********************************************
+FUNCTION: fantasy
+DESCRIPTION: 幻想滤镜
+INPUT: image
+RETURN: void
+***********************************************/
+void fantasy(Image *image)
+{
+    int x1,y1;
+    int x2,y2;
+    x1 = image->x;
+    y1 = image->y;
+    x2 = image->x + image->width - 1;
+    y2 = image->y + image->height - 1;
+    blend(x1,y1,x2,y2,PURPLE,0.4);
+    saveImageCache(image);
+}

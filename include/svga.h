@@ -25,6 +25,7 @@
 #define PINK 0xff6ec7
 #define RED 0xff0000
 #define BLACK 0x000000
+#define PURPLE 0x800080
 
 typedef unsigned char u8;
 typedef unsigned int u16;

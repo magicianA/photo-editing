@@ -106,5 +106,7 @@ void blend(int x1,int y1,int x2,int y2,u32 color2,double alpha);
 void laplace(Image *image);
 void girl(Image *image);
 int BMPcache(Image *image,char *path);
+void glass(Image *image);
+void fantasy(Image *image);
 
 #endif

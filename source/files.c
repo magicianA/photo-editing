@@ -66,7 +66,13 @@ void cleanTempFiles()
         }
     }
 }
-void previewFile(Image *image,int x,int y)
+/*********************************************
+FUNCTION: previewFile
+DESCRIPTION: 生成预览图
+INPUT: image x y
+RETURN: 布尔值，是否成功
+***********************************************/
+int previewFile(Image *image,int x,int y)
 {
     #define getcacheRed(i,j) (((getPixelFromCache(fp,(i),(j),h0)) >> 16) / 255.0)
     #define getcacheGreen(i,j) (((getPixelFromCache(fp,(i),(j),h0) >> 8) & 0xff) / 255.0)
@@ -118,4 +124,65 @@ void previewFile(Image *image,int x,int y)
     #undef getcacheRed
     #undef getcacheGreen
     #undef getcacheBlue
+}
+
+/*********************************************
+FUNCTION: fileInfoShow
+DESCRIPTION: 展示预览图
+INPUT: dir x y
+RETURN: void
+***********************************************/
+void fileInfoShow(struct ffblk dir,int x,int y)
+{
+    char name[18];
+    char data[12],time[12];
+    int year,month,day,hour,min,sec;
+	char cSize[12];
+    unsigned long int size;
+    bar(x,y,x + 130,y + 100,BLUE);
+    year = ((dir.ff_fdate & 0xFE00) >> 9) + 1980;	//注意优先级
+	month = (dir.ff_fdate & 0x1E0) >> 5;
+	day = dir.ff_fdate & 0x1F;
+	hour = (dir.ff_ftime & 0xF800) >> 11;
+	min = (dir.ff_ftime & 0x7E0) >> 5;
+	sec = (dir.ff_ftime & 0x1F) * 2;
+	size = dir.ff_fsize >> 10;
+
+    sprintf(data, "%d.%d.%d", year, month, day);
+	sprintf(time, "%d:%d:%d", hour, min, sec);
+	sprintf(cSize, "%ldkB", size);
+    strcpy(name, dir.ff_name);
+
+	TextGB16(x, y + 20, 12, BLACK, name);
+	TextGB16(x,y + 40, 12, BLACK, cSize);
+	TextGB16(x, y + 60,12, BLACK, data);
+	TextGB16(x, y + 80,12, BLACK, time); 
+}
+/*********************************************
+FUNCTION: findFile
+DESCRIPTION: 找到文件信息
+INPUT: n dir
+RETURN: 布尔值，是否成功
+***********************************************/
+int findFile(int n, struct ffblk *dir)
+{
+	int i = 0;
+	if (!findfirst("temp/*.bmp", dir, 0))	//找到返回值为0
+	{
+		for (; i < n; i++)
+		{
+			if (!findnext(dir))	//找到返回值为0
+			{
+				;
+			}
+			else
+			{
+				//已经没有文件了
+				dir->ff_name[0] = '\0';
+				return 0;
+			}
+		}
+		return 1;
+	}
+	return 0;
 }
