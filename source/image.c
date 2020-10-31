@@ -473,16 +473,15 @@ int convolute5(Image *image, double core[][5])
 }
 void sharpen(Image *image)
 {
-    double strength = 1;
     double core[3][3] = {0};
-    core[0][1] = core[1][0] = core[1][2] = core[2][1] = -strength;
-    core[1][1] = 1 + 4 * strength;
+    core[0][1] = core[1][0] = core[1][2] = core[2][1] = -1;
+    core[1][1] = 5;
     convolute3(image, core);
     saveImageCache(image);
 }
 void blur(Image *image)
 {
-    double core[3][3] = {1.0 / 9, 1.0 / 9, 1.0 / 9, 1.0 / 9, 1.0 / 9, 1.0 / 9, 1.0 / 9, 1.0 / 9, 1.0 / 9};
+    double core[3][3] = {1 / 16.0, 2 / 16.0, 1 / 16.0, 2 / 16.0, 4/ 16.0, 2 / 16.0, 1 / 16.0, 2 / 16.0, 1 / 16.0};
     convolute3(image, core);
     saveImageCache(image);
 }
@@ -496,6 +495,12 @@ void unsharpen(Image *image)
 {
     double core[5][5] = {{-1 / 256.0, -4 / 256.0, -6 / 256.0, -4 / 256.0, -1 / 256.0}, {-4 / 256.0, -16 / 256.0, -24 / 256.0, -16 / 256.0, -4 / 256.0}, {-6 / 256.0, -24 / 256.0, 476 / 256.0, -24 / 256.0, -6 / 256.0}, {-4 / 256.0, -16 / 256.0, -24 / 256.0, -16 / 256.0, -4 / 256.0}, {-1 / 256.0, -4 / 256.0, -6 / 256.0, -4 / 256.0, -1 / 256.0}};
     convolute5(image, core);
+    saveImageCache(image);
+}
+void laplace(Image *image)
+{
+    double core[3][3] = {-1,-1,-1,-1,8,-1,-1,-1,-1};
+    convolute3(image,core);
     saveImageCache(image);
 }
 void curve(Image *image)
@@ -829,14 +834,12 @@ void singleBlue(Image *image)
 
 void blend(int x1,int y1,int x2,int y2,u32 color2,double alpha)
 {
-    PREPARE_DEBUG;
     int i,j;
     int width,height;
     u32 color1;
     RGB res,rgb1,rgb2;
-    BEGIN_DEBUG;
-    width = abs(x2 - x1) + 1;
-    height = abs(y1 - y2) + 1;
+    width = x2 - x1 + 1;
+    height = y2 - y1 + 1;
     for(i = 0;i < width;i++){
         for(j = 0;j < height;j++){
             color1 = getPixel(x1 + i,y1 + j);
@@ -845,13 +848,21 @@ void blend(int x1,int y1,int x2,int y2,u32 color2,double alpha)
             res.r = alpha * rgb1.r + (1 - alpha) * rgb2.r;
             res.g = alpha * rgb1.g + (1 - alpha) * rgb2.g;
             res.b = alpha * rgb1.b + (1 - alpha) * rgb2.b;
-            LOG4("%d %d %d\n",res.r,res.g,res.b);
             res.r = min(res.r, 255);
             res.g = min(res.g, 255);
             res.b = min(res.b, 255);
             putPixel(x1 + i,y1 + j,RGB2u32(res));
         }   
     }
-    LOG3("%d %d\n",width,height);
-    END_DEBUG;
+}
+void girl(Image *image)
+{
+    int x1,y1;
+    int x2,y2;
+    x1 = image->x;
+    y1 = image->y;
+    x2 = image->x + image->width - 1;
+    y2 = image->y + image->height - 1;
+    blend(x1,y1,x2,y2,PINK,0.7);
+    saveImageCache(image);
 }

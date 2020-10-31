@@ -271,7 +271,7 @@ void msgPhase(int x, int y, char *s)
     Image bg;
     int i, j;
     bg.x = x, bg.y = y, bg.height = 200 + 20, bg.width = 300 + 20;
-    strcpy(bg.cachePath, "temp\\bgpic.tmp");
+    strcpy(bg.cachePath, "temp\\msgpic.tmp");
     saveImageCache(&bg);
     bar(x + 0, y + 50, x + 300 - 1, y + 200 - 1, BLUE);
     bar(x + 0, y + 0, x + 300 - 1, y + 55 - 1, RED);
@@ -304,10 +304,10 @@ void fliterPhase(Image *image, Stack *stack)
 {
     Mouse mouseOld, mouseNew;
     Image bg;
-    char fliterNames[15][20];
-    void (*filterFunc[15])(Image *) = {&old, &reverse, &gray, &sharpen, &blur, &curve, &movingBlur, &unsharpen, &melt, &cartoon, &extreme, &singleRed, &singleGreen, &singleBlue, NULL};
+    char fliterNames[20][20];
+    void (*filterFunc[20])(Image *) = {&old, &reverse, &gray, &sharpen, &blur, &curve, &movingBlur, &unsharpen, &melt, &cartoon, &extreme, &singleRed, &singleGreen, &singleBlue, &laplace,&girl};
     int curfilter = -1, curPage = 0;
-    int filtercount = 14;
+    int filtercount = 16;
     int i, j, x, y;
     char s[10];
     bg.x = 300, bg.y = 150, bg.height = 250 + 20, bg.width = 300 + 20;
@@ -319,14 +319,17 @@ void fliterPhase(Image *image, Stack *stack)
     strcpy(fliterNames[4], "模糊");
     strcpy(fliterNames[5], "浮雕");
     strcpy(fliterNames[6], "运动模糊");
-    strcpy(fliterNames[7], "降噪");
+    strcpy(fliterNames[7], "去模糊");
     strcpy(fliterNames[8], "熔铸");
     strcpy(fliterNames[9], "连环画");
     strcpy(fliterNames[10], "黑白");
     strcpy(fliterNames[11], "猩红");
     strcpy(fliterNames[12], "翠绿");
     strcpy(fliterNames[13], "蔚蓝");
-    strcpy(fliterNames[14], "空");
+    strcpy(fliterNames[14], "边缘检测");
+    strcpy(fliterNames[15],"少女");
+    strcpy(fliterNames[16],"空");
+    strcpy(fliterNames[17],"空");
     strcpy(bg.cachePath, "temp\\bgpic.tmp");
     saveImageCache(&bg);
     bar(x + 0, y + 50, x + 300 - 1, y + 200 - 1, BLUE);
@@ -381,7 +384,7 @@ void fliterPhase(Image *image, Stack *stack)
             }
             if (mouseDown(x + 230, y + 110, x + 270, y + 150))
             {
-                if (curPage < 4)
+                if (curPage < filtercount / 3)
                 {
                     curPage++;
                     bar(x + 10, y + 70, x + 220, y + 100, PINK);
@@ -527,6 +530,7 @@ void mainPhase()
     Image image = {0};
     Mouse mouseOld, mouseNew;
     u32 curColor = BLACK;
+    int curblock = 0,oldblock = 0;
     Stack stack;
     int curPage = 0;
     stackInit(&stack);
@@ -562,115 +566,192 @@ void mainPhase()
             mouseStoreBk(mouseNew.x, mouseNew.y);
             mouseDraw(mouseNew);
 
-            bar(200, 571, 500, 600, GRAY);
+            oldblock = curblock;
             if (mouseIn(mouseNew, 800 - 64, 0, 800, 64))
             {
-                TextGB16(200, 571, 15, WHITE, "关闭程序");
+                curblock = 1;
             }
-            if (mouseIn(mouseNew, 0, 0, 64, 64))
+            else if (mouseIn(mouseNew, 0, 0, 64, 64))
             {
-                TextGB16(200, 571, 15, WHITE, "关于程序");
+                curblock = 2;
             }
-            if (mouseIn(mouseNew, 3 + 64, 0, 3 + 128, 64))
+            else if (mouseIn(mouseNew, 3 + 64, 0, 3 + 128, 64))
             {
-                TextGB16(200, 571, 15, WHITE, "打开图片");
+                curblock = 3;
             }
-            if (mouseIn(mouseNew, 0, 64, 64, 128))
-            {
-                if (curPage == 0)
-                {
-                    TextGB16(200, 571, 15, WHITE, "旋转");
-                }
-                else if (curPage == 1)
-                {
-                    TextGB16(200, 571, 15, WHITE, "划线");
-                }
-            }
-            if (mouseIn(mouseNew, 0, 128, 64, 192))
+            else if (mouseIn(mouseNew, 0, 64, 64, 128))
             {
                 if (curPage == 0)
                 {
-                    TextGB16(200, 571, 15, WHITE, "切割");
+                    curblock = 4;
                 }
                 else if (curPage == 1)
                 {
-                    TextGB16(200, 571, 15, WHITE, "画三角形");
+                    curblock = 5;
                 }
             }
-            if (mouseIn(mouseNew, 3 + 128, 0, 3 + 192, 64))
-            {
-                TextGB16(200, 571, 15, WHITE, "保存");
-            }
-            if (mouseIn(mouseNew, 0, 192, 64, 256))
+            else if (mouseIn(mouseNew, 0, 128, 64, 192))
             {
                 if (curPage == 0)
                 {
-                    TextGB16(200, 571, 15, WHITE, "滤镜");
+                    curblock = 6;
                 }
                 else if (curPage == 1)
                 {
-                    TextGB16(200, 571, 15, WHITE, "画空心矩形");
+                    curblock = 7;
                 }
             }
-            if (mouseIn(mouseNew, 0, 320, 64, 384))
+            else if (mouseIn(mouseNew, 3 + 128, 0, 3 + 192, 64))
+            {
+                curblock = 8;
+            }
+            else if (mouseIn(mouseNew, 0, 192, 64, 256))
             {
                 if (curPage == 0)
                 {
-                    TextGB16(200, 571, 15, WHITE, "镜像");
+                    curblock = 9;
                 }
                 else if (curPage == 1)
                 {
-                    TextGB16(200, 571, 15, WHITE, "自由画笔");
+                    curblock = 10;
                 }
             }
-            if (mouseIn(mouseNew, 0, 256, 64, 320))
+            else if (mouseIn(mouseNew, 0, 320, 64, 384))
             {
                 if (curPage == 0)
                 {
-                    TextGB16(200, 571, 15, WHITE, "调节");
+                    curblock = 11;
                 }
                 else if (curPage == 1)
                 {
-                    TextGB16(200, 571, 15, WHITE, "画实心矩形");
+                    curblock = 12;
                 }
             }
-            if (mouseIn(mouseNew, 0, 384 + 5, 64, 448 + 5))
+            else if (mouseIn(mouseNew, 0, 256, 64, 320))
             {
                 if (curPage == 0)
                 {
-                    TextGB16(200, 571, 15, WHITE, "放缩");
+                    curblock = 13;
                 }
                 else if (curPage == 1)
                 {
-                    TextGB16(200, 571, 15, WHITE, "选择颜色");
+                    curblock = 14;
                 }
             }
-            if (mouseIn(mouseNew, 3 + 192, 0, 256, 64))
-            {
-                TextGB16(200, 571, 15, WHITE, "新建图片");
-            }
-            if (mouseIn(mouseNew, 3 + 256, 0, 3 + 320, 64))
-            {
-                TextGB16(200, 571, 15, WHITE, "关闭图片");
-            }
-            if (mouseIn(mouseNew, 0, 448 + 10, 64, 512 + 10))
+            else if (mouseIn(mouseNew, 0, 384 + 5, 64, 448 + 5))
             {
                 if (curPage == 0)
                 {
-                    TextGB16(200, 571, 15, WHITE, "画笔");
+                    curblock = 15;
                 }
                 else if (curPage == 1)
                 {
-                    TextGB16(200, 571, 15, WHITE, "返回");
+                    curblock = 16;
                 }
             }
-            if (mouseIn(mouseNew, 3 + 320, 0, 3 + 384, 64))
+            else if (mouseIn(mouseNew, 3 + 192, 0, 256, 64))
             {
-                TextGB16(200, 571, 15, WHITE, "撤销");
+                curblock = 17;
             }
-            if (mouseIn(mouseNew, 3 + 384, 0, 3 + 448, 64))
+            else if (mouseIn(mouseNew, 3 + 256, 0, 3 + 320, 64))
             {
-                TextGB16(200, 571, 15, WHITE, "图片列表");
+                curblock = 18;
+            }
+            else if (mouseIn(mouseNew, 0, 448 + 10, 64, 512 + 10))
+            {
+                if (curPage == 0)
+                {
+                    curblock = 19;
+                }
+                else if (curPage == 1)
+                {
+                    curblock = 20;
+                }
+            }
+            else if (mouseIn(mouseNew, 3 + 320, 0, 3 + 384, 64))
+            {
+                curblock = 21;
+            }
+            else if (mouseIn(mouseNew, 3 + 384, 0, 3 + 448, 64))
+            {
+                curblock = 22;
+            }
+            else{
+                curblock = 0;
+            }
+            if(curblock != oldblock){
+                bar(200, 571, 500, 600, GRAY);
+                switch (curblock)
+                {
+                    case 1:
+                        TextGB16(200, 571, 15, WHITE, "关闭程序");
+                    break;
+                    case 2:
+                        TextGB16(200, 571, 15, WHITE, "关于程序");
+                    break;                    
+                    case 3:
+                        TextGB16(200, 571, 15, WHITE, "打开图片");
+                    break;                    
+                    case 4:
+                        TextGB16(200, 571, 15, WHITE, "旋转");
+                    break;                    
+                    case 5:
+                        TextGB16(200, 571, 15, WHITE, "划线");
+                    break;                    
+                    case 6:
+                        TextGB16(200, 571, 15, WHITE, "切割");
+                    break;                    
+                    case 7:
+                        TextGB16(200, 571, 15, WHITE, "画三角形");
+                    break;                    
+                    case 8:
+                        TextGB16(200, 571, 15, WHITE, "保存");
+                    break;                    
+                    case 9:
+                        TextGB16(200, 571, 15, WHITE, "滤镜");
+                    break;                    
+                    case 10:
+                        TextGB16(200, 571, 15, WHITE, "画空心矩形");
+                    break;                    
+                    case 11:
+                        TextGB16(200, 571, 15, WHITE, "镜像");
+                    break;                    
+                    case 12:
+                        TextGB16(200, 571, 15, WHITE, "自由画笔");
+                    break;                    
+                    case 13:
+                        TextGB16(200, 571, 15, WHITE, "调节");
+                    break;                    
+                    case 14:
+                        TextGB16(200, 571, 15, WHITE, "画实心矩形");
+                    break;
+                    case 15:
+                        TextGB16(200, 571, 15, WHITE, "放缩");
+                    break;                
+                    case 16:
+                        TextGB16(200, 571, 15, WHITE, "选择颜色");
+                    break;                
+                    case 17:
+                        TextGB16(200, 571, 15, WHITE, "新建图片");
+                    break;                
+                    case 18:
+                        TextGB16(200, 571, 15, WHITE, "关闭图片");
+                    break;                
+                    case 19:
+                        TextGB16(200, 571, 15, WHITE, "画笔");
+                    break;                
+                    case 20:
+                        TextGB16(200, 571, 15, WHITE, "返回");
+                    break;                
+                    case 21:
+                        TextGB16(200, 571, 15, WHITE, "撤销");
+                    break;         
+                    case 22:
+                        TextGB16(200, 571, 15, WHITE, "图片列表");
+                    break;                      
+                    default:
+                        break;
+                }
             }
             if (mouseDown(800 - 64, 0, 800, 64))
             {
@@ -1373,7 +1454,7 @@ void newPhase(Image *image)
                 else
                 {
                     mousePutBk(mouseNew.x, mouseNew.y);
-                    msgPhase(200, 200, "图片大小过大");
+                    msgPhase(200, 200, "图片大小不合适");
                     mouseStoreBk(mouseNew.x, mouseNew.y);
                 }
             }
@@ -1421,6 +1502,7 @@ void drawFreePhase(Image *image, u32 color, Stack *stack)
 }
 void welcomePhase()
 {
+    delay(1400);
     putUI("ui\\wel2.bmp", 0, 0, -1);
     TextGB64(100, 100, 45, BLACK, "手机拍了好照片，", 6);
     TextGB64(100, 150, 45, BLACK, "却找不到好用的修图软件？", 6);
@@ -1558,20 +1640,17 @@ void fileListPhase(Image *image)
 {
     Mouse mouseOld, mouseNew;
     Image bg;
-    static char fileNames[20][20];
+    char fileNames[20][20];
     int curfile = -1, curPage = 0;
-    static int filecount;
+    int filecount;
     int i, j, x, y;
     char s[20];
     bg.x = 300, bg.y = 150, bg.height = 250 + 20, bg.width = 300 + 20;
     x = 300, y = 150;
-    if (filecount == 0)
-    {
-        filecount = fileCount();
-        for (i = 0; i < 20; i++)
-            strcpy(fileNames[i], "empty");
-        allFiles(fileNames, 20);
-    }
+    filecount = fileCount();
+    for (i = 0; i < 20; i++)
+        strcpy(fileNames[i], "empty");
+    allFiles(fileNames, 20);
     strcpy(bg.cachePath, "temp\\fbgpic.tmp");
     strcpy(s, "temp\\");
     saveImageCache(&bg);
@@ -1627,7 +1706,7 @@ void fileListPhase(Image *image)
             }
             if (mouseDown(x + 230, y + 110, x + 270, y + 150))
             {
-                if (curPage < 4)
+                if (curPage < filecount / 3)
                 {
                     curPage++;
                     bar(x + 10, y + 70, x + 220, y + 100, PINK);

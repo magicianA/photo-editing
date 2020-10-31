@@ -102,5 +102,7 @@ void singleRed(Image *image);
 void singleGreen(Image *image);
 void singleBlue(Image *image);
 void blend(int x1,int y1,int x2,int y2,u32 color2,double alpha);
+void laplace(Image *image);
+void girl(Image *image);
 
 #endif
