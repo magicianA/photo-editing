@@ -48,6 +48,7 @@ int readBMP(Image *image, const char *path, int x, int y, int flag)
 
     strcpy(temp, path);
     strcpy(strstr(temp, ".bmp"), ".tmp");
+    strcpy(strstr(temp, ".BMP"), ".tmp");
     if (fp)
     {
         fread(&bmphead, sizeof(bmphead), 1, fp);
@@ -824,4 +825,33 @@ void singleBlue(Image *image)
         }
     }
     saveImageCache(image);
+}
+
+void blend(int x1,int y1,int x2,int y2,u32 color2,double alpha)
+{
+    PREPARE_DEBUG;
+    int i,j;
+    int width,height;
+    u32 color1;
+    RGB res,rgb1,rgb2;
+    BEGIN_DEBUG;
+    width = abs(x2 - x1) + 1;
+    height = abs(y1 - y2) + 1;
+    for(i = 0;i < width;i++){
+        for(j = 0;j < height;j++){
+            color1 = getPixel(x1 + i,y1 + j);
+            rgb1 = getRGB(color1 >> 16, (color1 >> 8) & 0xff, color1 & 0xff);
+            rgb2 = getRGB(color2 >> 16, (color2 >> 8) & 0xff, color2 & 0xff);
+            res.r = alpha * rgb1.r + (1 - alpha) * rgb2.r;
+            res.g = alpha * rgb1.g + (1 - alpha) * rgb2.g;
+            res.b = alpha * rgb1.b + (1 - alpha) * rgb2.b;
+            LOG4("%d %d %d\n",res.r,res.g,res.b);
+            res.r = min(res.r, 255);
+            res.g = min(res.g, 255);
+            res.b = min(res.b, 255);
+            putPixel(x1 + i,y1 + j,RGB2u32(res));
+        }   
+    }
+    LOG3("%d %d\n",width,height);
+    END_DEBUG;
 }

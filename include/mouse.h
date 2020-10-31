@@ -31,4 +31,6 @@ extern int mouseUp(int x1, int y1, int x2, int y2);
 
 extern int mouseOutUp(int x1, int y1, int x2, int y2);
 
+int mouseIn(Mouse m,int x1, int y1, int x2, int y2);
+
 #endif

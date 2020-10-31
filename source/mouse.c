@@ -176,3 +176,16 @@ void mouseDraw(Mouse m)
 		}
 	}
 }
+
+
+int mouseIn(Mouse m,int x1, int y1, int x2, int y2)
+{
+	if ((m.x >= x1) && (m.x <= x2) && (m.y >= y1) && (m.y <= y2))
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}

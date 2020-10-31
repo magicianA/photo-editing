@@ -11,6 +11,7 @@ typedef struct
     char path[20];
     ImageData stackData[IMAGE_STACK_MAX_SIZE + 2];
     int base;
+    //int curtop;
 }Stack;
 
 

@@ -7,6 +7,7 @@ void cutPhase(Image *image, Stack *stack)
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x, mouseOld.y);
     stackPush(stack, image);
+    bar(200, 571, 500, 600, GRAY);
     TextGB16(200, 571, 15, WHITE, "请选择点1");
     while (1)
     {
@@ -51,6 +52,7 @@ void linePhase(Image *image, u32 color, Stack *stack)
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x, mouseOld.y);
     stackPush(stack, image);
+    bar(200, 571, 500, 600, GRAY);
     TextGB16(200, 571, 15, WHITE, "请选择点1");
     while (1)
     {
@@ -95,6 +97,7 @@ void emptyBarPhase(Image *image, u32 color, Stack *stack)
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x, mouseOld.y);
     stackPush(stack, image);
+    bar(200, 571, 500, 600, GRAY);
     TextGB16(200, 571, 15, WHITE, "请选择点1");
     while (1)
     {
@@ -139,6 +142,7 @@ void filledBarPhase(Image *image, u32 color, Stack *stack)
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x, mouseOld.y);
     stackPush(stack, image);
+    bar(200, 571, 500, 600, GRAY);
     TextGB16(200, 571, 15, WHITE, "请选择点1");
     while (1)
     {
@@ -185,6 +189,7 @@ void trianglePhase(Image *image, u32 color, Stack *stack)
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x, mouseOld.y);
     stackPush(stack, image);
+    bar(200, 571, 500, 600, GRAY);
     TextGB16(200, 571, 15, WHITE, "请选择点1");
     while (1)
     {
@@ -233,12 +238,9 @@ void testPhase()
 {
     Image image = {0};
     Mouse mouseOld, mouseNew;
-    Stack stack;
-    stackInit(&stack);
     bar(0, 0, SCR_WIDTH, SCR_HEIGHT, TIANYILAN);
     mouseReset();
     readBMP(&image, "temp\\timg.bmp", 0, 0, 0);
-    stackPush(&stack, &image);
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x, mouseOld.y);
     bar(300, 300, 300 + 32, 300 + 32, PINK);
@@ -255,16 +257,7 @@ void testPhase()
             if (mouseDown(300, 300, 332, 332))
             {
                 mousePutBk(mouseNew.x, mouseNew.y);
-                singleRed(&image);
-                stackPush(&stack, &image);
-                if (stack.tot == 2)
-                    bar(500, 500, 550, 550, WHITE);
-                getch();
-                old(&image);
-                getch();
-                stackPop(&stack, &image);
-                getch();
-                stackPop(&stack, &image);
+                blend(image.x, image.y, image.x + image.width - 1, image.y + image.height - 1, GRAY, 0.4);
                 getch();
                 break;
             }
@@ -429,6 +422,7 @@ void fliterPhase(Image *image, Stack *stack)
                 if (curfilter != -1)
                 {
                     putImage(&bg, x, y);
+                    bar(200, 571, 500, 600, GRAY);
                     TextGB16(200, 571, 15, WHITE, "处理中，请稍候");
                     stackPush(stack, image);
                     filterFunc[curfilter](image);
@@ -514,6 +508,7 @@ void adjustPhase(Image *image, Stack *stack)
             {
                 putImage(&bg, x, y);
                 stackPush(stack, image);
+                bar(200, 571, 500, 600, GRAY);
                 TextGB16(200, 571, 15, WHITE, "调整饱和度中，请稍候");
                 addSaturation(image, deltas / 200.0);
                 bar(200, 571, 500, 600, GRAY);
@@ -553,6 +548,7 @@ void mainPhase()
     putUI("ui\\new.bmp", 3 + 192, 0, -1);
     putUI("ui\\file.bmp", 3 + 256, 0, -1);
     putUI("ui\\undo.bmp", 3 + 320, 0, -1);
+    putUI("ui\\spf.bmp", 3 + 384, 0, -1);
     mouseReset();
 
     while (1)
@@ -565,6 +561,117 @@ void mainPhase()
             mousePutBk(mouseOld.x, mouseOld.y);
             mouseStoreBk(mouseNew.x, mouseNew.y);
             mouseDraw(mouseNew);
+
+            bar(200, 571, 500, 600, GRAY);
+            if (mouseIn(mouseNew, 800 - 64, 0, 800, 64))
+            {
+                TextGB16(200, 571, 15, WHITE, "关闭程序");
+            }
+            if (mouseIn(mouseNew, 0, 0, 64, 64))
+            {
+                TextGB16(200, 571, 15, WHITE, "关于程序");
+            }
+            if (mouseIn(mouseNew, 3 + 64, 0, 3 + 128, 64))
+            {
+                TextGB16(200, 571, 15, WHITE, "打开图片");
+            }
+            if (mouseIn(mouseNew, 0, 64, 64, 128))
+            {
+                if (curPage == 0)
+                {
+                    TextGB16(200, 571, 15, WHITE, "旋转");
+                }
+                else if (curPage == 1)
+                {
+                    TextGB16(200, 571, 15, WHITE, "划线");
+                }
+            }
+            if (mouseIn(mouseNew, 0, 128, 64, 192))
+            {
+                if (curPage == 0)
+                {
+                    TextGB16(200, 571, 15, WHITE, "切割");
+                }
+                else if (curPage == 1)
+                {
+                    TextGB16(200, 571, 15, WHITE, "画三角形");
+                }
+            }
+            if (mouseIn(mouseNew, 3 + 128, 0, 3 + 192, 64))
+            {
+                TextGB16(200, 571, 15, WHITE, "保存");
+            }
+            if (mouseIn(mouseNew, 0, 192, 64, 256))
+            {
+                if (curPage == 0)
+                {
+                    TextGB16(200, 571, 15, WHITE, "滤镜");
+                }
+                else if (curPage == 1)
+                {
+                    TextGB16(200, 571, 15, WHITE, "画空心矩形");
+                }
+            }
+            if (mouseIn(mouseNew, 0, 320, 64, 384))
+            {
+                if (curPage == 0)
+                {
+                    TextGB16(200, 571, 15, WHITE, "镜像");
+                }
+                else if (curPage == 1)
+                {
+                    TextGB16(200, 571, 15, WHITE, "自由画笔");
+                }
+            }
+            if (mouseIn(mouseNew, 0, 256, 64, 320))
+            {
+                if (curPage == 0)
+                {
+                    TextGB16(200, 571, 15, WHITE, "调节");
+                }
+                else if (curPage == 1)
+                {
+                    TextGB16(200, 571, 15, WHITE, "画实心矩形");
+                }
+            }
+            if (mouseIn(mouseNew, 0, 384 + 5, 64, 448 + 5))
+            {
+                if (curPage == 0)
+                {
+                    TextGB16(200, 571, 15, WHITE, "放缩");
+                }
+                else if (curPage == 1)
+                {
+                    TextGB16(200, 571, 15, WHITE, "选择颜色");
+                }
+            }
+            if (mouseIn(mouseNew, 3 + 192, 0, 256, 64))
+            {
+                TextGB16(200, 571, 15, WHITE, "新建图片");
+            }
+            if (mouseIn(mouseNew, 3 + 256, 0, 3 + 320, 64))
+            {
+                TextGB16(200, 571, 15, WHITE, "关闭图片");
+            }
+            if (mouseIn(mouseNew, 0, 448 + 10, 64, 512 + 10))
+            {
+                if (curPage == 0)
+                {
+                    TextGB16(200, 571, 15, WHITE, "画笔");
+                }
+                else if (curPage == 1)
+                {
+                    TextGB16(200, 571, 15, WHITE, "返回");
+                }
+            }
+            if (mouseIn(mouseNew, 3 + 320, 0, 3 + 384, 64))
+            {
+                TextGB16(200, 571, 15, WHITE, "撤销");
+            }
+            if (mouseIn(mouseNew, 3 + 384, 0, 3 + 448, 64))
+            {
+                TextGB16(200, 571, 15, WHITE, "图片列表");
+            }
             if (mouseDown(800 - 64, 0, 800, 64))
             {
                 break;
@@ -813,6 +920,7 @@ void mainPhase()
             {
                 if (image.height != 0)
                 {
+                    stackInit(&stack);
                     closeImage(&image);
                 }
                 else
@@ -874,11 +982,27 @@ void mainPhase()
                     mouseStoreBk(mouseNew.x, mouseNew.y);
                 }
             }
+            if (mouseDown(3 + 384, 0, 3 + 448, 64))
+            {
+                if (image.height == 0)
+                {
+                    mousePutBk(mouseNew.x, mouseNew.y);
+                    fileListPhase(&image);
+                    mouseStoreBk(mouseNew.x, mouseNew.y);
+                }
+                else
+                {
+                    mousePutBk(mouseNew.x, mouseNew.y);
+                    msgPhase(200, 200, "已打开图片");
+                    mouseStoreBk(mouseNew.x, mouseNew.y);
+                }
+            }
             mouseOld = mouseNew;
         }
     }
-    remove("temp\\bgpic.tmp");
-    remove("temp\\msgbgpic.tmp");
+    cleanTempFiles();
+    //remove("temp\\bgpic.tmp");
+    //remove("temp\\msgbgpic.tmp");
     if (image.height != 0)
     {
         remove(image.cachePath);
@@ -1146,6 +1270,7 @@ void zoomPhase(Image *image, Stack *stack)
             if (mouseDown(x + 100, y + 195, x + 200, y + 225))
             {
                 putImage(&bg, x, y);
+                bar(200, 571, 500, 600, GRAY);
                 TextGB16(200, 571, 15, WHITE, "调整中，请稍候");
                 stackPush(stack, image);
                 if (zoom(image, scaleX, scaleY) == 0)
@@ -1264,6 +1389,7 @@ void drawFreePhase(Image *image, u32 color, Stack *stack)
     mouseStatus(&mouseOld);
     mouseStoreBk(mouseOld.x, mouseOld.y);
     stackPush(stack, image);
+    bar(200, 571, 500, 600, GRAY);
     TextGB16(200, 571, 15, WHITE, "点击图片以开始,点击“返回”图标退出");
     while (1)
     {
@@ -1319,7 +1445,7 @@ u32 colorPhase()
     RGB res;
     bg.x = 300, bg.y = 150, bg.height = 280 + 40, bg.width = 300 + 40;
     x = 300, y = 150;
-    strcpy(bg.cachePath, "temp\\bgpic.tmp");
+    strcpy(bg.cachePath, "temp\\cbgpic.tmp");
     saveImageCache(&bg);
     bar(x + 0, y + 50, x + 300 - 1, y + 200 - 1, BLUE);
     bar(x + 0, y + 0, x + 300 - 1, y + 55 - 1, TIANYILAN);
@@ -1421,6 +1547,147 @@ void copyleftPhase()
             if (mouseDown(x + 100, y + 245, x + 200, y + 275))
             {
                 break;
+            }
+            mouseOld = mouseNew;
+        }
+    }
+    putImage(&bg, x, y);
+}
+
+void fileListPhase(Image *image)
+{
+    Mouse mouseOld, mouseNew;
+    Image bg;
+    static char fileNames[20][20];
+    int curfile = -1, curPage = 0;
+    static int filecount;
+    int i, j, x, y;
+    char s[20];
+    bg.x = 300, bg.y = 150, bg.height = 250 + 20, bg.width = 300 + 20;
+    x = 300, y = 150;
+    if (filecount == 0)
+    {
+        filecount = fileCount();
+        for (i = 0; i < 20; i++)
+            strcpy(fileNames[i], "empty");
+        allFiles(fileNames, 20);
+    }
+    strcpy(bg.cachePath, "temp\\fbgpic.tmp");
+    strcpy(s, "temp\\");
+    saveImageCache(&bg);
+    bar(x + 0, y + 50, x + 300 - 1, y + 200 - 1, BLUE);
+    bar(x + 0, y + 0, x + 300 - 1, y + 55 - 1, TIANYILAN);
+    bar(x + 250, y + 0, x + 300 - 1, y + 55 - 1, RED);
+    bar(x + 0, y + 200, x + 300 - 1, y + 250 - 1, BLUE);
+    bar(x + 100, y + 215, x + 220 - 1, y + 245 - 1, TIANYILAN);
+    putUI("ui\\up.bmp", x + 230, y + 60, -1);
+    putUI("ui\\down.bmp", x + 230, y + 110, -1);
+    line(x + 250, y + 0, x + 300, y + 55, WHITE);
+    line(x + 300, y + 0, x + 250, y + 55, WHITE);
+    TextGB64(x + 30, y, 50, WHITE, "选择文件", 0);
+    TextGB32(x + 110, y + 215, 40, WHITE, "确定");
+    bar(x + 10, y + 70, x + 220, y + 100, PINK);
+    TextASC24(x + 10, y + 70, 14, WHITE, fileNames[0]);
+
+    bar(x + 10, y + 110, x + 220, y + 140, PINK);
+    TextASC24(x + 10, y + 110, 14, WHITE, fileNames[1]);
+
+    bar(x + 10, y + 150, x + 220, y + 180, PINK);
+    TextASC24(x + 10, y + 150, 14, WHITE, fileNames[2]);
+
+    mouseStatus(&mouseOld);
+    mouseStoreBk(mouseOld.x, mouseOld.y);
+    while (1)
+    {
+        mouseStatus(&mouseNew);
+        if (mouseNew.x == mouseOld.x && mouseNew.y == mouseOld.y && mouseOld.button == mouseNew.button)
+            continue;
+        else
+        {
+            mousePutBk(mouseOld.x, mouseOld.y);
+            mouseStoreBk(mouseNew.x, mouseNew.y);
+            mouseDraw(mouseNew);
+            if (mouseDown(x + 250, y + 0, x + 300, y + 55))
+            {
+                break;
+            }
+            if (mouseDown(x + 230, y + 60, x + 270, y + 100))
+            {
+                if (curPage > 0)
+                {
+                    curPage--;
+                    bar(x + 10, y + 70, x + 220, y + 100, PINK);
+                    TextASC24(x + 10, y + 70, 14, WHITE, fileNames[0 + curPage * 3]);
+                    bar(x + 10, y + 110, x + 220, y + 140, PINK);
+                    TextASC24(x + 10, y + 110, 14, WHITE, fileNames[1 + curPage * 3]);
+                    bar(x + 10, y + 150, x + 220, y + 180, PINK);
+                    TextASC24(x + 10, y + 150, 14, WHITE, fileNames[2 + curPage * 3]);
+                    delay(100);
+                }
+            }
+            if (mouseDown(x + 230, y + 110, x + 270, y + 150))
+            {
+                if (curPage < 4)
+                {
+                    curPage++;
+                    bar(x + 10, y + 70, x + 220, y + 100, PINK);
+                    TextASC24(x + 10, y + 70, 14, WHITE, fileNames[0 + curPage * 3]);
+                    bar(x + 10, y + 110, x + 220, y + 140, PINK);
+                    TextASC24(x + 10, y + 110, 14, WHITE, fileNames[1 + curPage * 3]);
+                    bar(x + 10, y + 150, x + 220, y + 180, PINK);
+                    TextASC24(x + 10, y + 150, 14, WHITE, fileNames[2 + curPage * 3]);
+                    delay(100);
+                }
+            }
+            if (mouseDown(x + 10, y + 70, x + 220, y + 100))
+            {
+                curfile = 0 + curPage * 3;
+                if (curfile >= filecount)
+                {
+                    curfile = -1;
+                }
+            }
+            if (mouseDown(x + 10, y + 110, x + 220, y + 140))
+            {
+                curfile = 1 + curPage * 3;
+                if (curfile >= filecount)
+                {
+                    curfile = -1;
+                }
+            }
+            if (mouseDown(x + 10, y + 150, x + 220, y + 180))
+            {
+                curfile = 2 + curPage * 3;
+                if (curfile >= filecount)
+                {
+                    curfile = -1;
+                }
+            }
+            if (mouseDown(x + 100, y + 215, x + 220, y + 245))
+            {
+                if (curfile != -1)
+                {
+                    putImage(&bg, x, y);
+                    strcat(s, fileNames[curfile]);
+                    strcpy(image->cachePath, s);
+                    if (readBMP(image, s, 300, 200, 1) == 1)
+                        return;
+                    else
+                    {
+                        image->x = image->y = image->height = image->width = 0;
+                        strcpy(image->cachePath, "");
+                        strcpy(s, "temp\\");
+                        msgPhase(200, 200, "打开失败");
+                        mouseStoreBk(mouseNew.x, mouseNew.y);
+                        break;
+                    }
+                }
+                else
+                {
+                    mousePutBk(mouseNew.x, mouseNew.y);
+                    msgPhase(0, 0, "请选择文件");
+                    mouseStoreBk(mouseNew.x, mouseNew.y);
+                }
             }
             mouseOld = mouseNew;
         }

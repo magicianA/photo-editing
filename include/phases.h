@@ -12,6 +12,7 @@
 #include "image.h"
 #include "jpeg.h"
 #include "coll.h"
+#include "files.h"
 
 #define ESC 0x011b
 #define Tab 0x0f09
@@ -39,5 +40,6 @@ void linePhase(Image *image, u32 color,Stack *stack);
 void emptyBarPhase(Image *image, u32 color,Stack *stack);
 void filledBarPhase(Image *image, u32 color,Stack *stack);
 void trianglePhase(Image *image, u32 color,Stack *stack);
+void fileListPhase(Image *image);
 
 #endif
