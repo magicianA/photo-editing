@@ -1599,6 +1599,7 @@ void drawFreePhase(Image *image, u32 color, Stack *stack)
             if (mouseDown(0, 448 + 10, 64, 512 + 10))
             {
                 mousePutBk(mouseNew.x, mouseNew.y);
+                stackPop(stack,image);
                 bar(200, 571, 500, 600, GRAY);
                 break;
             }
